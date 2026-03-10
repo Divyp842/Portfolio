@@ -6,6 +6,12 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const resendApiKey = process.env.RESEND_API_KEY;
 
+// Email configuration - customize these for your domain
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "noreply@resend.dev";
+const PORTFOLIO_EMAIL = process.env.NEXT_PUBLIC_PORTFOLIO_EMAIL;
+const PORTFOLIO_NAME =
+  process.env.NEXT_PUBLIC_PORTFOLIO_NAME || "Portfolio Team";
+
 const supabase = createClient(supabaseUrl || "", supabaseServiceKey || "");
 const resend = new Resend(resendApiKey);
 
@@ -46,47 +52,75 @@ export async function POST(request: NextRequest) {
 
     if (dbError) {
       console.error("Database error:", dbError);
-      // Still return success to user, but log the error
+      return NextResponse.json(
+        { error: "Failed to save message" },
+        { status: 500 },
+      );
     }
 
-    // Send email notification
-    const portfolioEmail = process.env.NEXT_PUBLIC_PORTFOLIO_EMAIL;
-    const portfolioName =
-      process.env.NEXT_PUBLIC_PORTFOLIO_NAME || "Portfolio Owner";
-
-    if (resendApiKey) {
+    // Send email notification to your Gmail inbox
+    if (resendApiKey && PORTFOLIO_EMAIL) {
       try {
-        await resend.emails.send({
-          from: "Contact Form <onboarding@resend.dev>",
-          to: portfolioEmail || "delivered@resend.dev",
-          subject: `New Contact Form Message from ${name}`,
+        const response = await resend.emails.send({
+          from: FROM_EMAIL,
+          to: PORTFOLIO_EMAIL, // This should be your Gmail address
+          replyTo: email,
+          subject: `📧 New Message from ${name}`,
           html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 8px 8px 0 0; color: white;">
-                <h2 style="margin: 0;">📧 New Contact Message</h2>
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1f2937;">
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px 24px; border-radius: 12px 12px 0 0; color: white;">
+                <h1 style="margin: 0; font-size: 24px; font-weight: 700;">📧 New Contact Message</h1>
+                <p style="margin: 8px 0 0 0; opacity: 0.9;">You have a new message from your portfolio</p>
               </div>
               
-              <div style="background: #f8f9fa; padding: 20px; border-radius: 0 0 8px 8px;">
-                <p><strong>From:</strong> ${name}</p>
-                <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-                
-                <div style="margin-top: 20px; padding: 15px; background: white; border-left: 4px solid #667eea; border-radius: 4px;">
-                  <h3 style="margin-top: 0; color: #333;">Message:</h3>
-                  <p style="color: #555; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px; padding: 32px 24px;">
+                <div style="background: white; padding: 24px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 24px;">
+                  <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">From:</label>
+                    <p style="margin: 0; font-size: 16px; color: #1f2937; font-weight: 500;">${name}</p>
+                  </div>
+                  
+                  <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Reply To:</label>
+                    <a href="mailto:${email}" style="color: #667eea; text-decoration: none; font-weight: 500;">${email}</a>
+                  </div>
                 </div>
                 
-                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #999;">
-                  <p>This email was sent from your portfolio contact form.</p>
-                  <p style="margin: 5px 0;"><strong>Reply to:</strong> ${email}</p>
+                <div style="background: white; padding: 24px; border-radius: 8px; border: 1px solid #e5e7eb; border-left: 4px solid #667eea; margin-bottom: 24px;">
+                  <label style="display: block; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">Message:</label>
+                  <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #374151; white-space: pre-wrap;">${message}</p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+                  <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://yourportfolio.com"}/admin/messages" style="display: inline-block; background: #667eea; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
+                    View in Admin Panel
+                  </a>
+                </div>
+                
+                <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #9ca3af; text-align: center;">
+                  <p style="margin: 0;">Message received at ${new Date().toLocaleString()}</p>
+                  <p style="margin: 8px 0 0 0;">This is an automated email from your portfolio contact form.</p>
                 </div>
               </div>
             </div>
           `,
         });
+
+        if (response.error) {
+          console.error("Failed to send email notification:", response.error);
+        } else if (response.data?.id) {
+          console.log("Email sent successfully:", response.data.id);
+        } else {
+          console.warn("Email may not have been sent successfully");
+        }
       } catch (emailError) {
-        console.warn("Failed to send email notification:", emailError);
-        // Don't fail the request if email fails, as the message is stored
+        console.error("Failed to send email notification:", emailError);
+        // Don't fail the request - message is stored in DB
       }
+    } else {
+      console.warn(
+        "Email service not configured. Set RESEND_API_KEY and NEXT_PUBLIC_PORTFOLIO_EMAIL environment variables.",
+      );
     }
 
     return NextResponse.json(

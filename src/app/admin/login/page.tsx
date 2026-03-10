@@ -4,8 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import toast from "react-hot-toast";
-import { Eye, EyeOff, ArrowRight, ShieldCheck, Home, Lock, Square } from "lucide-react";
+import { useNotification } from "@/lib/useNotification";
+import {
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ShieldCheck,
+  Home,
+  Lock,
+  Square,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function AdminLogin() {
@@ -14,24 +22,31 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const notification = useNotification();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) { toast.error(error.message); } 
-      else if (data.session) {
-        toast.success("Identity Confirmed");
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        notification.error(error.message);
+      } else if (data.session) {
+        notification.success("Identity Confirmed");
         router.push("/admin/dashboard");
       }
-    } catch (error) { toast.error("Auth Failure"); } 
-    finally { setIsLoading(false); }
+    } catch (error) {
+      notification.error("Auth Failure");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen w-full bg-slate-50 dark:bg-[#0f1115] flex items-center justify-center px-4 relative overflow-hidden font-sans">
-      
       {/* Soft Ambient Background Elements */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full" />
@@ -47,13 +62,15 @@ export default function AdminLogin() {
         {/* Simple Brand Logo */}
         <div className="flex justify-center mb-8">
           <div className="w-12 h-12 bg-white dark:bg-[#16191f] border border-slate-200 dark:border-white/10 rounded-2xl flex items-center justify-center shadow-sm">
-            <Square className="text-indigo-600 dark:text-indigo-400 fill-indigo-600/10" size={24} />
+            <Square
+              className="text-indigo-600 dark:text-indigo-400 fill-indigo-600/10"
+              size={24}
+            />
           </div>
         </div>
 
         {/* Login Card */}
         <div className="bg-white dark:bg-[#16191f] rounded-[2rem] border border-slate-200 dark:border-white/5 p-8 md:p-10 shadow-xl shadow-indigo-500/5">
-          
           <div className="text-center mb-8">
             <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
               Welcome Back
@@ -65,7 +82,9 @@ export default function AdminLogin() {
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+                Email Address
+              </label>
               <input
                 type="email"
                 value={email}
@@ -77,7 +96,9 @@ export default function AdminLogin() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">Password</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+                Password
+              </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -117,7 +138,10 @@ export default function AdminLogin() {
 
           {/* Footer Navigation */}
           <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5">
-            <Link href="/" className="flex items-center justify-center gap-2 text-xs font-bold text-slate-400 hover:text-indigo-500 transition-colors uppercase tracking-widest">
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-2 text-xs font-bold text-slate-400 hover:text-indigo-500 transition-colors uppercase tracking-widest"
+            >
               <Home size={14} />
               <span>Back to Website</span>
             </Link>
@@ -126,10 +150,15 @@ export default function AdminLogin() {
 
         {/* Security Footer */}
         <div className="mt-8 flex items-center justify-center gap-4 opacity-50">
-           <div className="flex items-center gap-1.5">
-             <ShieldCheck size={14} className="text-indigo-600 dark:text-indigo-400" />
-             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Secure Access</span>
-           </div>
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck
+              size={14}
+              className="text-indigo-600 dark:text-indigo-400"
+            />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+              Secure Access
+            </span>
+          </div>
         </div>
       </motion.div>
     </div>
