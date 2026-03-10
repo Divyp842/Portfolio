@@ -17,18 +17,18 @@ import {
 
 // --- ANIMATED INDIVIDUAL CARD COMPONENT ---
 // This handles the "crawl" effect for each card based on scroll
-function TimelineCard({ 
-  item, 
-  index, 
-  total, 
-  direction, 
-  color 
-}: { 
-  item: any, 
-  index: number, 
-  total: number, 
-  direction: "left" | "right",
-  color: string 
+function TimelineCard({
+  item,
+  index,
+  total,
+  direction,
+  color,
+}: {
+  item: any;
+  index: number;
+  total: number;
+  direction: "left" | "right";
+  color: string;
 }) {
   const cardRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -39,9 +39,9 @@ function TimelineCard({
   // Smooth crawl animations
   const opacity = useTransform(scrollYProgress, [0, 0.8], [0, 1]);
   const x = useTransform(
-    scrollYProgress, 
-    [0, 1], 
-    [direction === "left" ? -40 : 40, 0]
+    scrollYProgress,
+    [0, 1],
+    [direction === "left" ? -40 : 40, 0],
   );
   const blur = useTransform(scrollYProgress, [0, 0.8], [8, 0]);
 
@@ -51,11 +51,15 @@ function TimelineCard({
       style={{ opacity, x, filter: `blur(${blur}px)` }}
       className="relative text-left p-4 md:p-6 rounded-2xl bg-white/50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 shadow-sm transition-colors duration-500"
     >
-      <div className={`absolute -left-[27px] md:-left-[51px] top-5 md:top-7 p-1 rounded-full bg-white dark:bg-[#050505] border border-${color}-500 text-${color}-500 z-20 scale-75 md:scale-100`}>
+      <div
+        className={`absolute -left-[27px] md:-left-[51px] top-5 md:top-7 p-1 rounded-full bg-white dark:bg-[#050505] border border-${color}-500 text-${color}-500 z-20 scale-75 md:scale-100`}
+      >
         <Crown size={10} />
       </div>
       <div className="space-y-1">
-        <span className={`text-[9px] font-bold text-${color}-500 uppercase tracking-widest`}>
+        <span
+          className={`text-[9px] font-bold text-${color}-500 uppercase tracking-widest`}
+        >
           {item.year}
         </span>
         <h4 className="text-base md:text-xl font-semibold md:font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
@@ -113,13 +117,13 @@ function TimelineSection({
           <div className="space-y-4 md:space-y-8">
             {Array.isArray(about?.education) &&
               about?.education?.map((edu: EducationItem, i: number) => (
-                <TimelineCard 
-                  key={i} 
-                  item={edu} 
-                  index={i} 
-                  total={about.education.length} 
-                  direction="left" 
-                  color="blue" 
+                <TimelineCard
+                  key={i}
+                  item={edu}
+                  index={i}
+                  total={about.education.length}
+                  direction="left"
+                  color="blue"
                 />
               ))}
           </div>
@@ -147,13 +151,13 @@ function TimelineSection({
           <div className="space-y-4 md:space-y-8">
             {Array.isArray(about?.experience) &&
               about?.experience?.map((exp: ExperienceItem, i: number) => (
-                <TimelineCard 
-                  key={i} 
-                  item={exp} 
-                  index={i} 
-                  total={about.experience.length} 
-                  direction="right" 
-                  color="purple" 
+                <TimelineCard
+                  key={i}
+                  item={exp}
+                  index={i}
+                  total={about.experience.length}
+                  direction="right"
+                  color="purple"
                 />
               ))}
           </div>
@@ -237,7 +241,7 @@ export default function About() {
                     <img
                       src={about.profile_photo}
                       alt="Profile"
-                      className="w-full h-full object-cover md:grayscale md:hover:grayscale-0 transition-all duration-700"
+                      className="w-full h-full object-cover md:grayscale md:hover:grayscale-0 md:hover:scale-110 transition-all duration-700"
                     />
                   )}
                 </div>
@@ -245,27 +249,52 @@ export default function About() {
             </div>
 
             {about?.resume_link && (
-              <a
+              <motion.a
                 href={about.resume_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between w-full max-w-[280px] md:max-w-none p-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm"
+                whileTap={{ scale: 0.96 }}
+                className="group relative flex items-center justify-between w-full max-w-[280px] p-4 
+               bg-white/80 dark:bg-zinc-900/60 backdrop-blur-xl 
+               border-2 border-white/20 dark:border-zinc-800/50 
+               rounded-2xl overflow-hidden transition-all duration-500 
+               hover:border-blue-500/50 shadow-xl"
               >
-                <div className="flex items-center gap-3 text-left">
-                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-lg">
-                    <FileText size={18} />
+                {/* High-Visibility Side Accent */}
+                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+
+                {/* Glass Shine Effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 pointer-events-none" />
+
+                <div className="relative z-10 flex items-center gap-4">
+                  <div className="p-2.5 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white rounded-xl shadow-sm group-hover:bg-blue-500 group-hover:text-white transition-colors duration-500">
+                    <FileText size={20} strokeWidth={2} />
                   </div>
-                  <div>
-                    <h4 className="text-[10px] font-bold uppercase text-zinc-900 dark:text-zinc-100">
+
+                  <div className="flex flex-col text-left">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-zinc-100">
                       Professional CV
                     </h4>
-                    <p className="text-[9px] text-zinc-500 uppercase">
-                      Download History
-                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[8px] font-mono text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                        PDF_CORE
+                      </span>
+                      <div className="w-1 h-1 rounded-full bg-blue-500" />
+                      <span className="text-[8px] font-mono text-blue-500 font-bold uppercase tracking-widest">
+                        LATEST
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <Download size={16} className="text-zinc-400" />
-              </a>
+
+                {/* Action Icon */}
+                <div className="relative z-10 text-zinc-400 group-hover:text-blue-500 group-hover:translate-y-0.5 transition-all duration-500">
+                  <Download size={18} strokeWidth={2.5} />
+                </div>
+
+                {/* Liquid Reveal Background */}
+                <div className="absolute inset-0 -z-10 bg-blue-50 dark:bg-blue-500/[0.05] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+              </motion.a>
             )}
           </div>
 
