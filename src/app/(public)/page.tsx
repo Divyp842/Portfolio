@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Loader, Sparkles, Globe, Cpu } from "lucide-react";
+import { ArrowRight, Loader, Sparkles, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion, Variants, useScroll, useTransform } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import Image from "next/image";
 import { Profile, About } from "@/types";
 
@@ -12,26 +12,22 @@ const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
   },
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 50, damping: 20 },
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
 export default function Home() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [about, setAbout] = useState<About | null>(null);
-  const { scrollY } = useScroll();
-
-  const y1 = useTransform(scrollY, [0, 500], [0, 40]);
-  const y2 = useTransform(scrollY, [0, 500], [0, -40]);
 
   const technologies = [
     "Next.js",
@@ -69,23 +65,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#050505] text-zinc-900 dark:text-zinc-100 selection:bg-blue-500/30 overflow-x-hidden">
-      {/* --- REFINED MINIMALIST BACKGROUND --- */}
+      {/* Static background — no animations, no blur on mobile */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Very faint grid - only 2% opacity for a premium feel */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808005_1px,transparent_1px),linear-gradient(to_bottom,#80808005_1px,transparent_1px)] bg-[size:80px_80px]" />
-
-        {/* Grain Overlay */}
-        <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-
-        {/* Soft Ambient Orbs */}
-        <motion.div
-          style={{ y: y1 }}
-          className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-blue-500/[0.06] blur-[100px] rounded-full"
-        />
-        <motion.div
-          style={{ y: y2 }}
-          className="absolute bottom-[0%] left-[-5%] w-[500px] h-[500px] bg-purple-500/[0.04] blur-[120px] rounded-full"
-        />
+        {/* Static orbs — no scroll transform, no blur on mobile */}
+        <div className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-blue-500/[0.06] hidden md:block blur-[80px] rounded-full" />
+        <div className="absolute bottom-[0%] left-[-5%] w-[500px] h-[500px] bg-purple-500/[0.04] hidden md:block blur-[100px] rounded-full" />
       </div>
 
       <motion.section
@@ -171,7 +156,7 @@ export default function Home() {
           >
             <div className="relative w-full max-w-[260px] md:max-w-[320px] aspect-[4/5] group">
               {/* Refined Decorative Frame */}
-              <div className="absolute -inset-8 border border-zinc-100 dark:border-zinc-900 rounded-full opacity-40 -z-10 group-hover:scale-110 transition-transform duration-1000" />
+              <div className="absolute -inset-8 border border-zinc-100 dark:border-zinc-900 rounded-full opacity-40 -z-10" />
 
               {/* Art Frame */}
               <div className="relative h-full w-full rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0a0a0a] p-3 md:p-4 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]">
@@ -182,7 +167,7 @@ export default function Home() {
                     alt={profile.name}
                     priority={!about?.profile_photo}
                     sizes="(max-width: 768px) 260px, (max-width: 1024px) 320px, 320px"
-                    className="object-cover transition-transform duration-[2.5s] ease-out group-hover:scale-110"
+                    className="object-cover md:transition-transform md:duration-700 md:ease-out md:group-hover:scale-105"
                   />
                 </div>
               </div>
@@ -200,10 +185,10 @@ export default function Home() {
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 1.5 }}
+        transition={{ delay: 1, duration: 0.4 }}
         className="fixed bottom-8 left-6 right-6 z-50 pointer-events-none md:bottom-10"
       >
-        <div className="max-w-5xl mx-auto flex items-center justify-between bg-white/60 dark:bg-zinc-900/40 backdrop-blur-2xl border border-zinc-200/50 dark:border-zinc-800/50 px-8 py-4 rounded-full shadow-xl pointer-events-auto">
+        <div className="max-w-5xl mx-auto flex items-center justify-between bg-white/80 dark:bg-zinc-900/80 md:backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 px-8 py-4 rounded-full shadow-lg pointer-events-auto">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500" />

@@ -26,6 +26,34 @@ const itemVariants: Variants = {
   },
 };
 
+function ProjectImage({ src, alt }: { src: string; alt: string }) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <>
+      {/* Skeleton shown while loading */}
+      {!loaded && !error && (
+        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800" />
+      )}
+      {error ? (
+        <div className="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800">
+          <Command size={28} className="text-zinc-300 dark:text-zinc-600" />
+        </div>
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={src}
+          alt={alt}
+          className={`absolute inset-0 w-full h-full object-cover md:transition-transform md:duration-700 md:ease-out md:group-hover:scale-105 transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
+          onLoad={() => setLoaded(true)}
+          onError={() => setError(true)}
+        />
+      )}
+    </>
+  );
+}
+
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [search, setSearch] = useState("");
@@ -62,16 +90,14 @@ export default function Projects() {
       {/* Background Layer */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-        <div className="absolute top-[-5%] right-[-5%] w-[40%] h-[40%] bg-purple-500/5 dark:bg-purple-500/10 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[5%] left-[-5%] w-[30%] h-[30%] bg-blue-500/5 dark:bg-blue-500/10 blur-[120px] rounded-full" />
+        <div className="absolute top-[-5%] right-[-5%] w-[40%] h-[40%] bg-purple-500/5 dark:bg-purple-500/10 hidden md:block blur-[80px] rounded-full" />
+        <div className="absolute bottom-[5%] left-[-5%] w-[30%] h-[30%] bg-blue-500/5 dark:bg-blue-500/10 hidden md:block blur-[80px] rounded-full" />
       </div>
 
       <motion.main 
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        // FIXED: Increased top padding to ensure content starts below the fixed navbar
-        // pt-28 (112px) for mobile, md:pt-48 (192px) for desktop
         className="relative z-10 max-w-5xl mx-auto px-5 pt-28 pb-12 md:pt-48 md:pb-24"
       >
         {/* Header Section */}
@@ -127,37 +153,38 @@ export default function Projects() {
                   exit={{ opacity: 0, scale: 0.98 }}
                   className="group"
                 >
-                  {/* Container Style Refined */}
                   <div className="relative flex flex-col md:flex-row items-center gap-6 md:gap-10 p-6 md:p-8 bg-white/40 dark:bg-zinc-900/30 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] hover:bg-white dark:hover:bg-zinc-900/80 transition-all duration-700 hover:shadow-2xl hover:shadow-purple-500/5">
                     
                     {/* Project Image */}
-                    <div className="relative w-full md:w-64 aspect-video md:aspect-square rounded-[1.8rem] overflow-hidden shrink-0 border border-zinc-100 dark:border-zinc-800">
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110"
-                      />
+                    <div className="relative w-full md:w-64 aspect-video md:aspect-square rounded-[1.8rem] overflow-hidden shrink-0 border border-zinc-100 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800">
+                      {project.image ? (
+                        <ProjectImage src={project.image} alt={project.title} />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-zinc-400 dark:text-zinc-600 text-xs uppercase tracking-widest font-bold">No Image</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Content Detail */}
-                    <div className="flex-grow space-y-6 w-full">
+                    <div className="flex-grow space-y-5 w-full">
                       <div className="flex justify-between items-start">
-                        <div className="space-y-1">
-                           <h2 className="text-3xl md:text-4xl font-black tracking-tighter uppercase">
+                        <div className="space-y-2">
+                           <h2 className="text-xl md:text-2xl font-black tracking-tight uppercase">
                             {project.title}
                           </h2>
-                          <div className="h-1 w-12 bg-purple-500 rounded-full" />
+                          <div className="h-0.5 w-8 bg-purple-500 rounded-full" />
                         </div>
                         
                         <div className="flex gap-3">
                           {project.github_url && (
-                            <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
-                              <Github size={20} />
+                            <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                              <Github size={18} />
                             </a>
                           )}
                           {project.live_url && (
-                            <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-all shadow-xl shadow-purple-500/20">
-                              <ArrowUpRight size={22} />
+                            <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-all shadow-xl shadow-purple-500/20">
+                              <ArrowUpRight size={20} />
                             </a>
                           )}
                         </div>
@@ -167,7 +194,7 @@ export default function Projects() {
                         {project.description}
                       </p>
 
-                      <div className="flex flex-wrap gap-2 pt-2">
+                      <div className="flex flex-wrap gap-2 pt-1">
                         {project.tech_stack?.map((tech) => (
                           <span 
                             key={tech} 

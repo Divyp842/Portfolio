@@ -58,8 +58,6 @@ export default function AdminProfile() {
     });
   };
 
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -106,7 +104,9 @@ export default function AdminProfile() {
         </p>
         <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/30 rounded-lg">
           <p className="text-sm text-blue-900 dark:text-blue-100">
-            📸 <strong>Profile Photo:</strong> Manage your profile photo in the <strong>About Page</strong> admin section. The same image will appear on both your homepage and about page.
+            📸 <strong>Profile Photo:</strong> Manage your profile photo in the{" "}
+            <strong>About Page</strong> admin section. The same image will
+            appear on both your homepage and about page.
           </p>
         </div>
       </div>
