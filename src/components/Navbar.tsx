@@ -13,6 +13,7 @@ const navLinks = [
   { href: "/projects", label: "Projects" },
   { href: "/skills", label: "Skills" },
   { href: "/certificates", label: "Certificates" },
+  { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -168,3 +169,5 @@ export function Navbar() {
     </motion.header>
   );
 }
+// ADD THIS LINE AT THE BOTTOM
+export default Navbar;

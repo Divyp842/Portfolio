@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Skill } from "@/types";
-import { Loader2, Terminal, Cpu, Database, Wrench, Layout, Activity, Zap, Radio } from "lucide-react";
+import { Loader2, Activity, Star } from "lucide-react";
 
 const categories = ["frontend", "backend", "database", "tools"] as const;
 
@@ -51,86 +51,67 @@ export default function Skills() {
     </div>
   );
 
-// ... (rest of your imports and logic stay exactly the same)
-
   return (
     <motion.div 
       initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
       animate={{ opacity: 1, clipPath: "inset(0 0% 0 0)" }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       onMouseMove={handleMouseMove}
-      /* FIXED: 
-         - Changed pt-24 to pt-32 for better mobile spacing.
-         - Changed lg:p-24 to lg:pt-44 to prevent desktop overlap.
-      */
-      className="min-h-screen transition-colors duration-500 bg-slate-50 dark:bg-[#050505] text-zinc-900 dark:text-zinc-100 pt-32 p-4 sm:p-10 lg:pt-44 lg:p-24 overflow-hidden font-sans relative"
+      className="min-h-screen transition-colors duration-500 bg-slate-50 dark:bg-[#050505] text-zinc-900 dark:text-zinc-100 pt-32 p-4 sm:p-10 lg:pt-44 lg:p-24 overflow-x-hidden font-sans relative"
     >
-      {/* --- PREMIUM BACKGROUND ENGINE --- */}
+      {/* --- PREMIUM BACKGROUND ENGINE - MATCHES OTHER PAGES --- */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1] bg-[size:40px_40px] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
         <motion.div 
           animate={{ x: mousePos.x * 3, y: mousePos.y * 3 }}
-          className="absolute top-[-15%] right-[-5%] w-[600px] h-[600px] bg-blue-500/10 dark:bg-blue-600/10 rounded-full blur-[120px]" 
+          className="absolute top-[-15%] right-[-5%] w-[600px] h-[600px] bg-blue-500/5 dark:bg-blue-600/5 rounded-full blur-[120px]" 
         />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto">
         {/* --- DYNAMIC KINETIC HEADER --- */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 group">
+        <header className="mb-16 md:mb-24">
           <motion.div 
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-1"
+             initial={{ x: -20, opacity: 0 }}
+             animate={{ x: 0, opacity: 1 }}
+             transition={{ delay: 0.4 }}
+             className="space-y-4 text-center md:text-left"
           >
-            <div className="flex items-center gap-2 text-blue-600 mb-1">
-              <Radio size={12} className="animate-pulse" />
-              <span className="text-[10px] font-mono font-black tracking-[0.5em] uppercase opacity-70">
-                Live.Inventory
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/50">
+              <Star size={14} className="text-blue-600 fill-blue-600" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">
+                Tech.Stack
               </span>
             </div>
-            <h1 className="text-5xl lg:text-7xl font-black tracking-tighter uppercase leading-[0.8] italic">
-              STREAMS<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300">
-                CAPABILITIES
-              </span>
+            
+            <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-none uppercase">
+              My <br className="md:hidden" />
+              <span className="text-zinc-300 dark:text-zinc-800 italic font-medium">Capabilities.</span>
             </h1>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="hidden lg:flex items-center gap-8 border-l border-zinc-200 dark:border-zinc-800 pl-8 h-16"
-          >
-            <div className="text-right">
-              <p className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest">Signal.Strength</p>
-              <p className="text-xs font-bold font-mono text-blue-600">OPTIMAL</p>
-            </div>
-            <div className="text-right">
-              <p className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest">Last.Fetch</p>
-              <p className="text-xs font-bold font-mono">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-            </div>
+            
+            <p className="text-zinc-500 dark:text-zinc-400 max-w-md mx-auto md:mx-0 text-base md:text-lg font-light">
+              A curated collection of technologies and frameworks I use to bridge the gap between complex logic and elegant design.
+            </p>
           </motion.div>
         </header>
 
         <div className="flex flex-col lg:grid lg:grid-cols-[200px_1fr] gap-12 items-start">
-          {/* --- SIDEBAR NAV --- */}
+          {/* --- SIDEBAR NAV - FIXED RESPONSIVENESS --- */}
           <motion.nav 
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.7 }}
-            className="flex lg:flex-col w-full gap-1 overflow-x-auto lg:overflow-visible no-scrollbar pb-4 lg:pb-0"
+            className="flex lg:flex-col w-full gap-2 overflow-x-auto lg:overflow-visible no-scrollbar pb-2 lg:pb-0 px-1"
           >
             {categories.map((cat) => (
               <button
                 key={cat}
                 onMouseEnter={() => { if(window.innerWidth > 1024) setActiveCat(cat) }}
                 onClick={() => setActiveCat(cat)}
-                className="group relative flex-shrink-0 lg:w-full text-left py-4 px-5 rounded-xl transition-all"
+                className="group relative flex-shrink-0 lg:w-full text-left py-3 md:py-4 px-5 rounded-xl transition-all"
               >
-                <div className="relative z-10 flex items-center justify-between">
-                  <span className={`text-[11px] uppercase tracking-[0.2em] font-black transition-all ${
+                <div className="relative z-10 flex items-center justify-between gap-4">
+                  <span className={`text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-black transition-all ${
                     activeCat === cat ? "text-blue-600" : "text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-900 dark:group-hover:text-zinc-200"
                   }`}>
                     {cat}
@@ -158,9 +139,9 @@ export default function Skills() {
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4"
+                className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6"
               >
-                {filteredSkills.map((skill, i) => (
+                {filteredSkills.map((skill) => (
                   <motion.div
                     key={skill.id}
                     whileHover={{ y: -5, translateZ: 20 }}
@@ -184,7 +165,7 @@ export default function Skills() {
                           {[1, 2, 3].map((dot) => (
                             <div 
                               key={dot}
-                              className={`h-1 w-2.5 rounded-full ${
+                              className={`h-1 w-2 md:w-2.5 rounded-full ${
                                 dot <= (skill.level === 'advanced' ? 3 : skill.level === 'intermediate' ? 2 : 1)
                                 ? "bg-blue-600 shadow-[0_0_8px_rgba(59,130,246,0.4)]" : "bg-zinc-200 dark:border-zinc-800"
                               }`}
@@ -194,7 +175,7 @@ export default function Skills() {
                       </div>
 
                       <div>
-                        <h3 className="text-xs font-black uppercase tracking-tighter text-zinc-900 dark:text-zinc-100 truncate">
+                        <h3 className="text-[10px] md:text-xs font-black uppercase tracking-tighter text-zinc-900 dark:text-zinc-100 truncate">
                           {skill.name}
                         </h3>
                         <div className="flex items-center gap-1.5 mt-1">

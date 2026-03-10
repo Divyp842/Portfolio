@@ -68,7 +68,10 @@ export default function AdminMessages() {
       <div className="space-y-4">
         <div className="h-8 w-48 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse" />
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-20 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+          <div
+            key={i}
+            className="h-20 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse"
+          />
         ))}
       </div>
     );
@@ -77,17 +80,26 @@ export default function AdminMessages() {
   const unreadCount = messages.filter((m) => !m.read).length;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-6"
+    >
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Messages</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-            {unreadCount > 0
-              ? <><span className="text-blue-600 dark:text-blue-400 font-semibold">{unreadCount} unread</span> · {messages.length} total</>
-              : `${messages.length} message${messages.length !== 1 ? "s" : ""}`
-            }
+            {unreadCount > 0 ? (
+              <>
+                <span className="text-blue-600 dark:text-blue-400 font-semibold">
+                  {unreadCount} unread
+                </span>{" "}
+                · {messages.length} total
+              </>
+            ) : (
+              `${messages.length} message${messages.length !== 1 ? "s" : ""}`
+            )}
           </p>
         </div>
       </div>
@@ -115,50 +127,72 @@ export default function AdminMessages() {
               {/* Header row */}
               <div
                 className="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
-                onClick={() => setExpandedId(expandedId === message.id ? null : message.id)}
+                onClick={() =>
+                  setExpandedId(expandedId === message.id ? null : message.id)
+                }
               >
-                <div className={`p-2 rounded-lg flex-shrink-0 ${!message.read ? "bg-blue-50 dark:bg-blue-950/40" : "bg-gray-100 dark:bg-gray-700"}`}>
-                  {message.read
-                    ? <MailOpen size={14} className="text-gray-400" />
-                    : <Mail size={14} className="text-blue-600 dark:text-blue-400" />
-                  }
+                <div
+                  className={`p-2 rounded-lg flex-shrink-0 ${!message.read ? "bg-blue-50 dark:bg-blue-950/40" : "bg-gray-100 dark:bg-gray-700"}`}
+                >
+                  {message.read ? (
+                    <MailOpen size={14} className="text-gray-400" />
+                  ) : (
+                    <Mail
+                      size={14}
+                      className="text-blue-600 dark:text-blue-400"
+                    />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className={`text-sm font-semibold ${!message.read ? "" : "text-gray-700 dark:text-gray-300"}`}>
+                    <span
+                      className={`text-sm font-semibold ${!message.read ? "" : "text-gray-700 dark:text-gray-300"}`}
+                    >
                       {message.name}
                     </span>
                     {!message.read && (
                       <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-blue-500" />
                     )}
                   </div>
-                  <p className="text-[11px] text-gray-400 truncate">{message.email} · {new Date(message.created_at).toLocaleDateString()}</p>
+                  <p className="text-[11px] text-gray-400 truncate">
+                    {message.email} ·{" "}
+                    {new Date(message.created_at).toLocaleDateString()}
+                  </p>
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <button
-                    onClick={(e) => { e.stopPropagation(); handleMarkRead(message.id, message.read); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleMarkRead(message.id, message.read);
+                    }}
                     className={`p-1.5 rounded-lg text-[11px] font-medium transition-colors ${message.read ? "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400" : "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40"}`}
                     title={message.read ? "Mark unread" : "Mark read"}
                   >
                     {message.read ? <Mail size={13} /> : <MailOpen size={13} />}
                   </button>
                   <button
-                    onClick={(e) => { e.stopPropagation(); handleDelete(message.id); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(message.id);
+                    }}
                     className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-gray-400 hover:text-red-500 transition-colors"
                   >
                     <Trash2 size={13} />
                   </button>
-                  {expandedId === message.id
-                    ? <ChevronUp size={14} className="text-gray-400 ml-1" />
-                    : <ChevronDown size={14} className="text-gray-400 ml-1" />
-                  }
+                  {expandedId === message.id ? (
+                    <ChevronUp size={14} className="text-gray-400 ml-1" />
+                  ) : (
+                    <ChevronDown size={14} className="text-gray-400 ml-1" />
+                  )}
                 </div>
               </div>
               {/* Expanded body */}
               {expandedId === message.id && (
                 <div className="px-4 pb-4">
                   <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700/50">
-                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{message.message}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                      {message.message}
+                    </p>
                   </div>
                   <div className="mt-2 flex items-center gap-3">
                     <a

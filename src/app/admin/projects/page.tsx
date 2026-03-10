@@ -3,7 +3,16 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Project } from "@/types";
-import { Plus, Edit2, Trash2, X, Check, Github, ExternalLink, Image as ImageIcon } from "lucide-react";
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  X,
+  Check,
+  Github,
+  ExternalLink,
+  Image as ImageIcon,
+} from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function AdminProjects() {
@@ -163,7 +172,10 @@ export default function AdminProjects() {
         <div className="h-8 w-48 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse" />
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-56 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+            <div
+              key={i}
+              className="h-56 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse"
+            />
           ))}
         </div>
       </div>
@@ -171,18 +183,29 @@ export default function AdminProjects() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-6"
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Projects</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-            {projects.length} project{projects.length !== 1 ? "s" : ""} in your portfolio
+            {projects.length} project{projects.length !== 1 ? "s" : ""} in your
+            portfolio
           </p>
         </div>
         <button
-          onClick={() => { if (showForm && !editingId) { resetForm(); } else { resetForm(); setShowForm(true); } }}
+          onClick={() => {
+            if (showForm && !editingId) {
+              resetForm();
+            } else {
+              resetForm();
+              setShowForm(true);
+            }
+          }}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium hover:bg-gray-700 dark:hover:bg-gray-100 transition-colors"
         >
           <Plus size={16} />
@@ -201,15 +224,22 @@ export default function AdminProjects() {
             className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/60 p-5 shadow-sm"
           >
             <div className="flex items-center justify-between mb-5">
-              <h2 className="font-semibold text-base">{editingId ? "Edit Project" : "New Project"}</h2>
-              <button onClick={resetForm} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-colors">
+              <h2 className="font-semibold text-base">
+                {editingId ? "Edit Project" : "New Project"}
+              </h2>
+              <button
+                onClick={resetForm}
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-colors"
+              >
                 <X size={16} />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Title *</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                    Title *
+                  </label>
                   <input
                     type="text"
                     name="title"
@@ -222,7 +252,9 @@ export default function AdminProjects() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Image URL *</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                    Image URL *
+                  </label>
                   <input
                     type="url"
                     name="image"
@@ -235,7 +267,9 @@ export default function AdminProjects() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Description</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                  Description
+                </label>
                 <textarea
                   name="description"
                   value={formData.description}
@@ -246,26 +280,44 @@ export default function AdminProjects() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Tech Stack</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                  Tech Stack
+                </label>
                 <div className="flex gap-2 mb-2">
                   <input
                     type="text"
                     value={techInput}
                     onChange={(e) => setTechInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTech(); } }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTech();
+                      }
+                    }}
                     placeholder="Add technology, press Enter"
                     className="flex-1 px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white/30 transition"
                   />
-                  <button type="button" onClick={addTech} className="px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                  <button
+                    type="button"
+                    onClick={addTech}
+                    className="px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
                     Add
                   </button>
                 </div>
                 {formData.tech_stack.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {formData.tech_stack.map((tech) => (
-                      <span key={tech} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                      <span
+                        key={tech}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                      >
                         {tech}
-                        <button type="button" onClick={() => removeTech(tech)} className="hover:text-red-500 transition-colors">
+                        <button
+                          type="button"
+                          onClick={() => removeTech(tech)}
+                          className="hover:text-red-500 transition-colors"
+                        >
                           <X size={10} />
                         </button>
                       </span>
@@ -275,7 +327,9 @@ export default function AdminProjects() {
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">GitHub URL</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                    GitHub URL
+                  </label>
                   <input
                     type="url"
                     name="github_url"
@@ -286,7 +340,9 @@ export default function AdminProjects() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Live URL</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                    Live URL
+                  </label>
                   <input
                     type="url"
                     name="live_url"
@@ -304,9 +360,17 @@ export default function AdminProjects() {
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium hover:bg-gray-700 dark:hover:bg-gray-100 disabled:opacity-50 transition-colors"
                 >
                   <Check size={14} />
-                  {isSaving ? "Saving…" : editingId ? "Update Project" : "Create Project"}
+                  {isSaving
+                    ? "Saving…"
+                    : editingId
+                      ? "Update Project"
+                      : "Create Project"}
                 </button>
-                <button type="button" onClick={resetForm} className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
                   Cancel
                 </button>
               </div>
@@ -318,7 +382,9 @@ export default function AdminProjects() {
       {/* Projects Grid */}
       {projects.length === 0 ? (
         <div className="text-center py-16 text-gray-400 dark:text-gray-500">
-          <p className="text-sm">No projects yet. Click <strong>Add Project</strong> to get started.</p>
+          <p className="text-sm">
+            No projects yet. Click <strong>Add Project</strong> to get started.
+          </p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -334,14 +400,21 @@ export default function AdminProjects() {
               <div className="relative h-40 bg-gray-100 dark:bg-gray-700/50 overflow-hidden">
                 {project.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={project.image} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <ImageIcon size={32} className="text-gray-300 dark:text-gray-600" />
+                    <ImageIcon
+                      size={32}
+                      className="text-gray-300 dark:text-gray-600"
+                    />
                   </div>
                 )}
                 {/* Action buttons overlay */}
-                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-2 right-2 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => handleEdit(project)}
                     className="p-1.5 rounded-lg bg-white/90 dark:bg-gray-800/90 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white shadow-sm transition-colors"
@@ -358,30 +431,49 @@ export default function AdminProjects() {
               </div>
               {/* Content */}
               <div className="p-4">
-                <h3 className="font-semibold text-sm mb-1 truncate">{project.title}</h3>
+                <h3 className="font-semibold text-sm mb-1 truncate">
+                  {project.title}
+                </h3>
                 {project.description && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{project.description}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
+                    {project.description}
+                  </p>
                 )}
                 {project.tech_stack && project.tech_stack.length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-3">
                     {project.tech_stack.slice(0, 4).map((tech) => (
-                      <span key={tech} className="px-1.5 py-0.5 rounded text-[11px] font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                      <span
+                        key={tech}
+                        className="px-1.5 py-0.5 rounded text-[11px] font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                      >
                         {tech}
                       </span>
                     ))}
                     {project.tech_stack.length > 4 && (
-                      <span className="text-[11px] text-gray-400">+{project.tech_stack.length - 4}</span>
+                      <span className="text-[11px] text-gray-400">
+                        +{project.tech_stack.length - 4}
+                      </span>
                     )}
                   </div>
                 )}
                 <div className="flex gap-3 pt-1 border-t border-gray-100 dark:border-gray-700">
                   {project.github_url && (
-                    <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <a
+                      href={project.github_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    >
                       <Github size={12} /> GitHub
                     </a>
                   )}
                   {project.live_url && (
-                    <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <a
+                      href={project.live_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    >
                       <ExternalLink size={12} /> Live
                     </a>
                   )}

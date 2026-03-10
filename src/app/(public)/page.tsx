@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Loader, Sparkles, Globe } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, Loader, Sparkles } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import Image from "next/image";
 import { Profile, About } from "@/types";
@@ -65,10 +64,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#050505] text-zinc-900 dark:text-zinc-100 selection:bg-blue-500/30 overflow-x-hidden">
-      {/* Static background — no animations, no blur on mobile */}
+      {/* Static background */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808005_1px,transparent_1px),linear-gradient(to_bottom,#80808005_1px,transparent_1px)] bg-[size:80px_80px]" />
-        {/* Static orbs — no scroll transform, no blur on mobile */}
         <div className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-blue-500/[0.06] hidden md:block blur-[80px] rounded-full" />
         <div className="absolute bottom-[0%] left-[-5%] w-[500px] h-[500px] bg-purple-500/[0.04] hidden md:block blur-[100px] rounded-full" />
       </div>
@@ -107,11 +105,10 @@ export default function Home() {
                 <span className="text-zinc-900 dark:text-white font-bold">
                   {profile.name}
                 </span>
-                . Crafting high-end web systems with{" "}
+                .{" "}
                 <span className="italic underline decoration-blue-500/20 underline-offset-8">
-                  absolute precision
+                  {profile.bio}
                 </span>
-                .
               </p>
 
               <div className="flex flex-wrap justify-center lg:justify-start gap-x-8 gap-y-3">
@@ -129,36 +126,56 @@ export default function Home() {
               </div>
             </motion.div>
 
+            {/* --- BUTTONS: FIXED WORD BREAK & RESPONSIVENESS --- */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-4"
+              className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 pt-4"
             >
               <Link href="/projects" className="w-full sm:w-auto">
-                <Button className="w-full sm:w-auto rounded-none px-12 h-16 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black tracking-[0.2em] text-[10px] hover:bg-blue-600 dark:hover:bg-blue-500 transition-all duration-500">
-                  VIEW PROJECTS
-                </Button>
-              </Link>
-              <Link href="/contact" className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto rounded-none px-12 h-16 border-zinc-200 dark:border-zinc-800 font-black tracking-[0.2em] text-[10px] hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all"
+                <motion.button
+                  whileHover={{ y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full whitespace-nowrap px-6 sm:px-10 py-3.5 sm:py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black text-[10px] uppercase tracking-[0.2em] relative group overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
                 >
-                  GET IN TOUCH
-                </Button>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-500/0 to-blue-600/0 group-hover:from-blue-600/20 group-hover:via-blue-500/20 group-hover:to-blue-600/20 transition-all duration-300" />
+                  <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-blue-400 to-blue-600 group-hover:w-full transition-all duration-500" />
+                  <span className="relative flex items-center justify-center gap-2">
+                    VIEW PROJECTS
+                    <ArrowRight
+                      size={15}
+                      className="group-hover:translate-x-1 transition-transform"
+                    />
+                  </span>
+                </motion.button>
+              </Link>
+              
+              <Link href="/contact" className="w-full sm:w-auto">
+                <motion.button
+                  whileHover={{ y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full whitespace-nowrap px-6 sm:px-10 py-3.5 sm:py-4 border-[2px] border-zinc-900 dark:border-white text-zinc-900 dark:text-white font-black text-[10px] uppercase tracking-[0.2em] relative group overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-zinc-900/0 dark:from-white/0 via-zinc-900/10 dark:via-white/10 to-zinc-900/0 dark:to-white/0 group-hover:from-zinc-900/20 dark:group-hover:from-white/20 group-hover:via-zinc-900/20 dark:group-hover:via-white/20 group-hover:to-zinc-900/20 dark:group-hover:to-white/20 transition-all duration-300" />
+                  <div className="absolute top-0 left-0 h-[2px] w-0 bg-gradient-to-r from-zinc-900 dark:from-white to-zinc-600 dark:to-zinc-300 group-hover:w-full transition-all duration-500" />
+                  <span className="relative flex items-center justify-center gap-2">
+                    GET IN TOUCH
+                    <ArrowRight
+                      size={15}
+                      className="group-hover:translate-x-1 transition-transform"
+                    />
+                  </span>
+                </motion.button>
               </Link>
             </motion.div>
           </div>
 
-          {/* --- IMAGE COLUMN: COMPACT & ELEGANT --- */}
+          {/* --- IMAGE COLUMN --- */}
           <motion.div
             variants={itemVariants}
             className="w-full lg:col-span-5 order-1 lg:order-2 flex justify-center lg:justify-end"
           >
             <div className="relative w-full max-w-[260px] md:max-w-[320px] aspect-[4/5] group">
-              {/* Refined Decorative Frame */}
               <div className="absolute -inset-8 border border-zinc-100 dark:border-zinc-900 rounded-full opacity-40 -z-10" />
-
-              {/* Art Frame */}
               <div className="relative h-full w-full rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0a0a0a] p-3 md:p-4 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]">
                 <div className="relative h-full w-full rounded-[1.4rem] md:rounded-[1.8rem] overflow-hidden">
                   <Image
@@ -171,8 +188,6 @@ export default function Home() {
                   />
                 </div>
               </div>
-
-              {/* Minimalist Floating Accent */}
               <div className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 p-4 md:p-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-full shadow-2xl z-20">
                 <Sparkles size={20} className="md:w-6 md:h-6" />
               </div>
@@ -192,21 +207,15 @@ export default function Home() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              <span className="text-[9px] font-black uppercase tracking-widest opacity-50">
+              <span className="text-[9px] font-black uppercase tracking-widest opacity-50 text-zinc-900 dark:text-white">
                 Operational
-              </span>
-            </div>
-            <div className="hidden sm:flex items-center gap-2">
-              <Globe size={11} className="opacity-30" />
-              <span className="text-[9px] font-bold uppercase tracking-widest opacity-30">
-                V.2.0.26
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="h-[1px] w-6 bg-zinc-300 dark:bg-zinc-700" />
-            <span className="text-[9px] font-mono opacity-30 uppercase tracking-[0.3em]">
+            <span className="text-[9px] font-mono opacity-30 uppercase tracking-[0.3em] text-zinc-900 dark:text-white">
               Vadodara, Gujarat
             </span>
           </div>

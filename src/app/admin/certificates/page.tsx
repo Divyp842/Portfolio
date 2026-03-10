@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, X, Check, Award, ExternalLink } from "lucide-react";
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  X,
+  Check,
+  Award,
+  ExternalLink,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { Certificate } from "@/types";
 import { supabase } from "@/lib/supabase";
@@ -124,22 +132,36 @@ export default function AdminCertificates() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "short" });
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+    });
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-6"
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Certificates</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-            {certificates.length} certification{certificates.length !== 1 ? "s" : ""}
+            {certificates.length} certification
+            {certificates.length !== 1 ? "s" : ""}
           </p>
         </div>
         <button
-          onClick={() => { if (showForm && !editingId) { resetForm(); } else { resetForm(); setShowForm(true); } }}
+          onClick={() => {
+            if (showForm && !editingId) {
+              resetForm();
+            } else {
+              resetForm();
+              setShowForm(true);
+            }
+          }}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium hover:bg-gray-700 dark:hover:bg-gray-100 transition-colors"
         >
           <Plus size={16} />
@@ -158,19 +180,28 @@ export default function AdminCertificates() {
             className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/60 p-5 shadow-sm"
           >
             <div className="flex items-center justify-between mb-5">
-              <h2 className="font-semibold text-base">{editingId ? "Edit Certificate" : "New Certificate"}</h2>
-              <button onClick={resetForm} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-colors">
+              <h2 className="font-semibold text-base">
+                {editingId ? "Edit Certificate" : "New Certificate"}
+              </h2>
+              <button
+                onClick={resetForm}
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-colors"
+              >
                 <X size={16} />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Certificate Title *</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                    Certificate Title *
+                  </label>
                   <input
                     type="text"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     autoFocus
                     required
                     placeholder="e.g. AWS Solutions Architect"
@@ -178,11 +209,15 @@ export default function AdminCertificates() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Issuing Organization *</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                    Issuing Organization *
+                  </label>
                   <input
                     type="text"
                     value={formData.issuer}
-                    onChange={(e) => setFormData({ ...formData, issuer: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, issuer: e.target.value })
+                    }
                     required
                     placeholder="e.g. Amazon Web Services"
                     className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white/30 transition"
@@ -191,21 +226,35 @@ export default function AdminCertificates() {
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Date Obtained *</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                    Date Obtained *
+                  </label>
                   <input
                     type="date"
                     value={formData.date_obtained}
-                    onChange={(e) => setFormData({ ...formData, date_obtained: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        date_obtained: e.target.value,
+                      })
+                    }
                     required
                     className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white/30 transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Certificate URL *</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                    Certificate URL *
+                  </label>
                   <input
                     type="url"
                     value={formData.certificate_url}
-                    onChange={(e) => setFormData({ ...formData, certificate_url: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        certificate_url: e.target.value,
+                      })
+                    }
                     required
                     placeholder="https://example.com/certificate"
                     className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white/30 transition"
@@ -213,10 +262,14 @@ export default function AdminCertificates() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">Description (optional)</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                  Description (optional)
+                </label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   rows={2}
                   placeholder="Additional details about this certification..."
                   className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white/30 transition resize-none"
@@ -230,7 +283,11 @@ export default function AdminCertificates() {
                   <Check size={14} />
                   {editingId ? "Update Certificate" : "Add Certificate"}
                 </button>
-                <button type="button" onClick={resetForm} className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
                   Cancel
                 </button>
               </div>
@@ -243,7 +300,10 @@ export default function AdminCertificates() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-20 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+            <div
+              key={i}
+              className="h-20 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse"
+            />
           ))}
         </div>
       ) : certificates.length === 0 ? (
@@ -262,17 +322,26 @@ export default function AdminCertificates() {
               className="group flex items-center gap-4 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm transition-all"
             >
               <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex-shrink-0">
-                <Award size={16} className="text-amber-600 dark:text-amber-400" />
+                <Award
+                  size={16}
+                  className="text-amber-600 dark:text-amber-400"
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold truncate">{cert.title}</p>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">{cert.issuer}</span>
+                  <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">
+                    {cert.issuer}
+                  </span>
                   <span className="text-[11px] text-gray-400">·</span>
-                  <span className="text-[11px] text-gray-400">{formatDate(cert.date_obtained)}</span>
+                  <span className="text-[11px] text-gray-400">
+                    {formatDate(cert.date_obtained)}
+                  </span>
                 </div>
                 {cert.description && (
-                  <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5 line-clamp-1">{cert.description}</p>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5 line-clamp-1">
+                    {cert.description}
+                  </p>
                 )}
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">
@@ -285,10 +354,16 @@ export default function AdminCertificates() {
                 >
                   <ExternalLink size={13} />
                 </a>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => {
-                      setFormData({ title: cert.title, issuer: cert.issuer, date_obtained: cert.date_obtained, certificate_url: cert.certificate_url, description: cert.description || "" });
+                      setFormData({
+                        title: cert.title,
+                        issuer: cert.issuer,
+                        date_obtained: cert.date_obtained,
+                        certificate_url: cert.certificate_url,
+                        description: cert.description || "",
+                      });
                       setEditingId(cert.id);
                       setShowForm(true);
                       window.scrollTo({ top: 0, behavior: "smooth" });

@@ -2,7 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader, Save, Upload, X, Plus, Trash2, UserCircle, BookOpen, Briefcase, Link2 } from "lucide-react";
+import {
+  Loader,
+  Save,
+  Upload,
+  X,
+  Plus,
+  Trash2,
+  UserCircle,
+  BookOpen,
+  Briefcase,
+  Link2,
+} from "lucide-react";
 import toast from "react-hot-toast";
 
 interface EducationEntry {
@@ -52,7 +63,9 @@ export default function AdminAbout() {
       } else if (typeof data.education === "string" && data.education.trim()) {
         try {
           const parsed = JSON.parse(data.education);
-          setEducation(Array.isArray(parsed) && parsed.length > 0 ? parsed : [emptyEdu()]);
+          setEducation(
+            Array.isArray(parsed) && parsed.length > 0 ? parsed : [emptyEdu()],
+          );
         } catch {
           setEducation([emptyEdu()]);
         }
@@ -61,10 +74,15 @@ export default function AdminAbout() {
       // Parse experience — handle both array and plain string
       if (Array.isArray(data.experience) && data.experience.length > 0) {
         setExperience(data.experience);
-      } else if (typeof data.experience === "string" && data.experience.trim()) {
+      } else if (
+        typeof data.experience === "string" &&
+        data.experience.trim()
+      ) {
         try {
           const parsed = JSON.parse(data.experience);
-          setExperience(Array.isArray(parsed) && parsed.length > 0 ? parsed : [emptyExp()]);
+          setExperience(
+            Array.isArray(parsed) && parsed.length > 0 ? parsed : [emptyExp()],
+          );
         } catch {
           setExperience([emptyExp()]);
         }
@@ -85,14 +103,20 @@ export default function AdminAbout() {
       const formDataUpload = new FormData();
       formDataUpload.append("file", file);
       formDataUpload.append("folder", "profile-photos");
-      const response = await fetch("/api/upload", { method: "POST", body: formDataUpload });
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataUpload,
+      });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.details || result.error || "Upload failed");
+      if (!response.ok)
+        throw new Error(result.details || result.error || "Upload failed");
       setProfilePhoto(result.url);
       setProfilePhotoPreview(result.url);
       toast.success("Image uploaded!");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to upload image");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to upload image",
+      );
     } finally {
       setIsUploading(false);
     }
@@ -109,8 +133,8 @@ export default function AdminAbout() {
           about_text: aboutText,
           profile_photo: profilePhoto,
           resume_link: resumeLink,
-          education: education.filter(e => e.degree || e.school),
-          experience: experience.filter(e => e.title || e.company),
+          education: education.filter((e) => e.degree || e.school),
+          experience: experience.filter((e) => e.title || e.company),
         }),
       });
       if (!response.ok) throw new Error("Failed to save");
@@ -132,19 +156,27 @@ export default function AdminAbout() {
     );
   }
 
-  const inputClass = "w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white/30 transition";
-  const labelClass = "block text-xs font-bold text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider";
-  const sectionClass = "rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/60 p-5 shadow-sm";
+  const inputClass =
+    "w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white/30 transition";
+  const labelClass =
+    "block text-xs font-bold text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider";
+  const sectionClass =
+    "rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/60 p-5 shadow-sm";
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-6"
+    >
       <div>
         <h1 className="text-2xl font-bold tracking-tight">About Section</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Update your professional profile and background</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          Update your professional profile and background
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-
         {/* Profile Photo */}
         <div className={sectionClass}>
           <div className="flex items-center gap-2 mb-4">
@@ -153,10 +185,17 @@ export default function AdminAbout() {
           </div>
           {profilePhotoPreview ? (
             <div className="relative w-32 h-32">
-              <img src={profilePhotoPreview} alt="Preview" className="w-32 h-32 object-cover rounded-xl border border-gray-200 dark:border-gray-700" />
+              <img
+                src={profilePhotoPreview}
+                alt="Preview"
+                className="w-32 h-32 object-cover rounded-xl border border-gray-200 dark:border-gray-700"
+              />
               <button
                 type="button"
-                onClick={() => { setProfilePhoto(""); setProfilePhotoPreview(""); }}
+                onClick={() => {
+                  setProfilePhoto("");
+                  setProfilePhotoPreview("");
+                }}
                 className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 shadow"
               >
                 <X size={12} />
@@ -165,14 +204,25 @@ export default function AdminAbout() {
           ) : (
             <label className="flex flex-col items-center justify-center w-full max-w-sm p-6 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
               <Upload size={24} className="text-gray-400 mb-2" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Click to upload photo</span>
-              <span className="text-xs text-gray-400 mt-0.5">PNG, JPG up to 10MB</span>
-              <input type="file" accept="image/*" onChange={handleImageUpload} disabled={isUploading} className="hidden" />
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Click to upload photo
+              </span>
+              <span className="text-xs text-gray-400 mt-0.5">
+                PNG, JPG up to 10MB
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={isUploading}
+                className="hidden"
+              />
             </label>
           )}
           {isUploading && (
             <div className="flex items-center gap-2 text-sm text-blue-600 mt-2">
-              <Loader size={14} className="animate-spin" /><span>Uploading…</span>
+              <Loader size={14} className="animate-spin" />
+              <span>Uploading…</span>
             </div>
           )}
         </div>
@@ -209,21 +259,70 @@ export default function AdminAbout() {
           </div>
           <div className="space-y-3">
             {education.map((edu, i) => (
-              <div key={i} className="relative grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+              <div
+                key={i}
+                className="relative grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
+              >
                 <div>
                   <label className={labelClass}>Degree / Course</label>
-                  <input type="text" value={edu.degree} onChange={e => setEducation(education.map((item, idx) => idx === i ? { ...item, degree: e.target.value } : item))} className={inputClass} placeholder="e.g. B.Tech Computer Science" />
+                  <input
+                    type="text"
+                    value={edu.degree}
+                    onChange={(e) =>
+                      setEducation(
+                        education.map((item, idx) =>
+                          idx === i
+                            ? { ...item, degree: e.target.value }
+                            : item,
+                        ),
+                      )
+                    }
+                    className={inputClass}
+                    placeholder="e.g. B.Tech Computer Science"
+                  />
                 </div>
                 <div>
                   <label className={labelClass}>School / University</label>
-                  <input type="text" value={edu.school} onChange={e => setEducation(education.map((item, idx) => idx === i ? { ...item, school: e.target.value } : item))} className={inputClass} placeholder="e.g. Gujarat University" />
+                  <input
+                    type="text"
+                    value={edu.school}
+                    onChange={(e) =>
+                      setEducation(
+                        education.map((item, idx) =>
+                          idx === i
+                            ? { ...item, school: e.target.value }
+                            : item,
+                        ),
+                      )
+                    }
+                    className={inputClass}
+                    placeholder="e.g. Gujarat University"
+                  />
                 </div>
                 <div>
                   <label className={labelClass}>Year</label>
-                  <input type="text" value={edu.year} onChange={e => setEducation(education.map((item, idx) => idx === i ? { ...item, year: e.target.value } : item))} className={inputClass} placeholder="e.g. 2020 – 2024" />
+                  <input
+                    type="text"
+                    value={edu.year}
+                    onChange={(e) =>
+                      setEducation(
+                        education.map((item, idx) =>
+                          idx === i ? { ...item, year: e.target.value } : item,
+                        ),
+                      )
+                    }
+                    className={inputClass}
+                    placeholder="e.g. 2020 – 2024"
+                  />
                 </div>
                 {education.length > 1 && (
-                  <button type="button" onClick={() => setEducation(education.filter((_, idx) => idx !== i))} className="absolute top-3 right-3 p-1 text-gray-300 hover:text-red-500 transition-colors">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setEducation(education.filter((_, idx) => idx !== i))
+                    }
+                    className="absolute top-3 right-3 p-1 text-gray-300 hover:text-red-500 transition-colors"
+                  >
                     <Trash2 size={14} />
                   </button>
                 )}
@@ -249,21 +348,68 @@ export default function AdminAbout() {
           </div>
           <div className="space-y-3">
             {experience.map((exp, i) => (
-              <div key={i} className="relative grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+              <div
+                key={i}
+                className="relative grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
+              >
                 <div>
                   <label className={labelClass}>Job Title</label>
-                  <input type="text" value={exp.title} onChange={e => setExperience(experience.map((item, idx) => idx === i ? { ...item, title: e.target.value } : item))} className={inputClass} placeholder="e.g. Full Stack Developer" />
+                  <input
+                    type="text"
+                    value={exp.title}
+                    onChange={(e) =>
+                      setExperience(
+                        experience.map((item, idx) =>
+                          idx === i ? { ...item, title: e.target.value } : item,
+                        ),
+                      )
+                    }
+                    className={inputClass}
+                    placeholder="e.g. Full Stack Developer"
+                  />
                 </div>
                 <div>
                   <label className={labelClass}>Company</label>
-                  <input type="text" value={exp.company} onChange={e => setExperience(experience.map((item, idx) => idx === i ? { ...item, company: e.target.value } : item))} className={inputClass} placeholder="e.g. TechCorp India" />
+                  <input
+                    type="text"
+                    value={exp.company}
+                    onChange={(e) =>
+                      setExperience(
+                        experience.map((item, idx) =>
+                          idx === i
+                            ? { ...item, company: e.target.value }
+                            : item,
+                        ),
+                      )
+                    }
+                    className={inputClass}
+                    placeholder="e.g. TechCorp India"
+                  />
                 </div>
                 <div>
                   <label className={labelClass}>Year</label>
-                  <input type="text" value={exp.year} onChange={e => setExperience(experience.map((item, idx) => idx === i ? { ...item, year: e.target.value } : item))} className={inputClass} placeholder="e.g. 2022 – Present" />
+                  <input
+                    type="text"
+                    value={exp.year}
+                    onChange={(e) =>
+                      setExperience(
+                        experience.map((item, idx) =>
+                          idx === i ? { ...item, year: e.target.value } : item,
+                        ),
+                      )
+                    }
+                    className={inputClass}
+                    placeholder="e.g. 2022 – Present"
+                  />
                 </div>
                 {experience.length > 1 && (
-                  <button type="button" onClick={() => setExperience(experience.filter((_, idx) => idx !== i))} className="absolute top-3 right-3 p-1 text-gray-300 hover:text-red-500 transition-colors">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExperience(experience.filter((_, idx) => idx !== i))
+                    }
+                    className="absolute top-3 right-3 p-1 text-gray-300 hover:text-red-500 transition-colors"
+                  >
                     <Trash2 size={14} />
                   </button>
                 )}
@@ -299,4 +445,3 @@ export default function AdminAbout() {
     </motion.div>
   );
 }
-

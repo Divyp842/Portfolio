@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // 1. Added Variants type here
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
   Mail,
   Github,
@@ -10,7 +10,6 @@ import {
   Send,
   Sparkles,
   Loader2,
-  MessageSquare,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -39,6 +38,13 @@ export default function Contact() {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  // Added effect to trigger the reveal animation after a brief loading state
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -63,15 +69,28 @@ export default function Contact() {
       } else {
         toast.error("Failed to send. Please try again.");
       }
-    } catch (error) {
-      toast.error("Something went wrong.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Consistent loader from Skills page
+  if (isInitialLoading) return (
+    <div className="h-screen flex items-center justify-center bg-white dark:bg-[#050505]">
+      <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#050505] text-zinc-900 dark:text-zinc-100 transition-colors duration-500">
+    <motion.div 
+      initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
+      animate={{ opacity: 1, clipPath: "inset(0 0% 0 0)" }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      className="min-h-screen bg-[#fafafa] dark:bg-[#050505] text-zinc-900 dark:text-zinc-100 transition-colors duration-500 relative overflow-hidden"
+    >
       {/* Background Ambience */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
@@ -82,7 +101,6 @@ export default function Contact() {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        // FIXED: Increased pt-32 for mobile and md:pt-48 for desktop
         className="relative z-10 max-w-4xl mx-auto px-6 pt-32 pb-20 md:pt-48 md:pb-32 flex flex-col items-center"
       >
         <header className="text-center mb-16 space-y-4">
@@ -225,6 +243,6 @@ export default function Contact() {
           </p>
         </motion.footer>
       </motion.main>
-    </div>
+    </motion.div>
   );
 }
