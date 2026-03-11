@@ -2,7 +2,13 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { motion, useScroll, useSpring, useTransform, MotionValue } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  MotionValue,
+} from "framer-motion";
 import type { About, EducationItem, ExperienceItem } from "@/types";
 import {
   Loader2,
@@ -35,51 +41,61 @@ function TimelineCard({
       const parent = cardRef.current.parentElement;
       const cardTop = cardRef.current.offsetTop;
       const parentHeight = parent.offsetHeight;
-      // Calculate exactly where this card sits on the 0-1 scale of the vertical line
       setOffset(cardTop / parentHeight);
     }
   }, []);
 
-  // SYNCED MOTION: The card slides in based on the LINE'S progress
-  const syncRange = [offset - 0.1, offset, offset + 0.1];
-  
-  const opacity = useTransform(lineProgress, syncRange, [0, 1, 1]);
-  const x = useTransform(
+  // 1. We create a dedicated internal spring for the card's progress.
+  // This is the secret to removing the "jerkiness".
+  const activationRaw = useTransform(
     lineProgress,
-    syncRange,
-    [direction === "left" ? -100 : 100, 0, 0]
+    [offset - 0.15, offset],
+    [0, 1],
   );
+  const activation = useSpring(activationRaw, {
+    stiffness: 70,
+    damping: 20,
+    restDelta: 0.001,
+  });
 
-  // Activation for Crown scale and color
-  const activation = useTransform(lineProgress, [offset - 0.05, offset], [0, 1]);
-  const crownScale = useTransform(activation, [0, 0.8, 1], [0.5, 1.1, 1]);
-  
+  // 2. Map animations to the smoothed activation value
+  const opacity = useTransform(activation, [0, 0.5], [0, 1]);
+  const x = useTransform(
+    activation,
+    [0, 1],
+    [direction === "left" ? -100 : 100, 0],
+  );
+  const scale = useTransform(activation, [0, 1], [0.9, 1]);
+  const filter = useTransform(activation, (v) => `blur(${(1 - v) * 10}px)`);
+
+  // Crown logic
+  const crownScale = useTransform(activation, [0, 0.8, 1], [0.5, 1.2, 1]);
   const iconColor = useTransform(
-    activation, 
-    [0, 1], 
-    ["#a1a1aa", color === "blue" ? "#3b82f6" : "#a855f7"]
+    activation,
+    [0, 1],
+    ["#a1a1aa", color === "blue" ? "#3b82f6" : "#a855f7"],
   );
   const borderColor = useTransform(
-    activation, 
-    [0, 1], 
-    ["#e4e4e7", color === "blue" ? "#3b82f6" : "#a855f7"]
+    activation,
+    [0, 1],
+    ["#e4e4e7", color === "blue" ? "#3b82f6" : "#a855f7"],
   );
-
   const glowOpacity = useTransform(activation, [0, 0.5, 1], [0, 0.3, 0.1]);
 
   return (
     <div ref={cardRef} className="relative mb-8 md:mb-12 last:mb-0">
+      {/* THE CROWN & SYNCED GLOW */}
       <div className="absolute left-0 top-5 md:top-7 -translate-x-1/2 z-20">
         <motion.div
           style={{ opacity: glowOpacity, scale: 2 }}
           className={`absolute inset-0 rounded-full bg-${color}-500 blur-2xl`}
         />
         <motion.div
-          style={{ 
-            scale: crownScale, 
-            borderColor: borderColor, 
+          style={{
+            scale: crownScale,
+            borderColor: borderColor,
             color: iconColor,
-            borderWidth: "2px" 
+            borderWidth: "2px",
           }}
           className="relative w-5 h-5 md:w-6 md:h-6 rounded-full bg-white dark:bg-[#050505] border flex items-center justify-center shadow-md"
         >
@@ -87,9 +103,10 @@ function TimelineCard({
         </motion.div>
       </div>
 
+      {/* THE SLIDING CARD: Now with Spring physics and Blur */}
       <motion.div
-        style={{ opacity, x }}
-        className="ml-6 md:ml-10 text-left p-4 md:p-6 rounded-2xl bg-white/50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 shadow-sm transition-colors duration-500"
+        style={{ opacity, x, scale, filter }}
+        className="ml-6 md:ml-10 text-left p-4 md:p-6 rounded-2xl bg-white/50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 shadow-sm transition-colors duration-500 backdrop-blur-sm"
       >
         <div className="space-y-1">
           <motion.span
@@ -111,29 +128,28 @@ function TimelineCard({
 }
 
 // --- NEW INDEPENDENT COLUMN COMPONENT ---
-function TimelineColumn({ 
-  title, 
-  icon, 
-  items, 
-  color, 
-  direction 
-}: { 
-  title: string; 
-  icon: React.ReactNode; 
-  items: any[]; 
-  color: string; 
+function TimelineColumn({
+  title,
+  icon,
+  items,
+  color,
+  direction,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  items: any[];
+  color: string;
   direction: "left" | "right";
 }) {
   const columnRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: columnRef,
-    // Triggers growth when the column is in the view
     offset: ["start 85%", "end 60%"],
   });
-  
+
   const lineHeight = useSpring(scrollYProgress, {
     stiffness: 40,
-    damping: 30,
+    damping: 25,
   });
 
   return (
@@ -151,7 +167,7 @@ function TimelineColumn({
         <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-zinc-200 dark:bg-zinc-800" />
         <motion.div
           style={{ scaleY: lineHeight }}
-          className={`absolute left-0 top-0 bottom-0 w-[1px] bg-${color === 'blue' ? 'blue-500' : 'purple-500'} origin-top z-10`}
+          className={`absolute left-0 top-0 bottom-0 w-[1px] bg-${color === "blue" ? "blue-500" : "purple-500"} origin-top z-10`}
         />
         <div className="space-y-0 pt-2">
           {items?.map((item, i) => (
