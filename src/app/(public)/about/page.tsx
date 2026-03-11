@@ -7,9 +7,8 @@ import {
   useScroll,
   useSpring,
   useTransform,
-  MotionValue,
 } from "framer-motion";
-import type { About, EducationItem, ExperienceItem } from "@/types";
+import type { About } from "@/types";
 import {
   Loader2,
   Download,
@@ -26,61 +25,52 @@ function TimelineCard({
   item,
   direction,
   color,
-  lineProgress,
 }: {
   item: any;
   direction: "left" | "right";
   color: string;
-  lineProgress: MotionValue<number>;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState(0);
 
-  useEffect(() => {
-    if (cardRef.current && cardRef.current.parentElement) {
-      const parent = cardRef.current.parentElement;
-      const cardTop = cardRef.current.offsetTop;
-      const parentHeight = parent.offsetHeight;
-      setOffset(cardTop / parentHeight);
-    }
-  }, []);
+  // Use the card itself as the scroll target for pinpoint accuracy
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start 90%", "start 60%"], // Triggers as it enters the bottom of screen
+  });
 
-  // 1. We create a dedicated internal spring for the card's progress.
-  // This is the secret to removing the "jerkiness".
-  const activationRaw = useTransform(
-    lineProgress,
-    [offset - 0.15, offset],
-    [0, 1],
-  );
-  const activation = useSpring(activationRaw, {
-    stiffness: 70,
+  // Create a spring-smoothed version of the scroll progress
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 60,
     damping: 20,
     restDelta: 0.001,
   });
 
-  // 2. Map animations to the smoothed activation value
-  const opacity = useTransform(activation, [0, 0.5], [0, 1]);
+  // Map animations to the smooth scroll progress (0 to 1)
+  const opacity = useTransform(smoothProgress, [0, 0.3], [0, 1]);
+  const scale = useTransform(smoothProgress, [0, 1], [0.92, 1]);
   const x = useTransform(
-    activation,
+    smoothProgress,
     [0, 1],
-    [direction === "left" ? -100 : 100, 0],
+    [direction === "left" ? -60 : 60, 0]
   );
-  const scale = useTransform(activation, [0, 1], [0.9, 1]);
-  const filter = useTransform(activation, (v) => `blur(${(1 - v) * 10}px)`);
-
-  // Crown logic
-  const crownScale = useTransform(activation, [0, 0.8, 1], [0.5, 1.2, 1]);
+  
+  // Visual polish: Blur and Glow
+  const blurValue = useTransform(smoothProgress, [0, 0.8], [12, 0]);
+  const filter = useTransform(blurValue, (v) => `blur(${v}px)`);
+  
   const iconColor = useTransform(
-    activation,
+    smoothProgress,
     [0, 1],
-    ["#a1a1aa", color === "blue" ? "#3b82f6" : "#a855f7"],
+    ["#a1a1aa", color === "blue" ? "#3b82f6" : "#a855f7"]
   );
+  
   const borderColor = useTransform(
-    activation,
+    smoothProgress,
     [0, 1],
-    ["#e4e4e7", color === "blue" ? "#3b82f6" : "#a855f7"],
+    ["#e4e4e7", color === "blue" ? "#3b82f6" : "#a855f7"]
   );
-  const glowOpacity = useTransform(activation, [0, 0.5, 1], [0, 0.3, 0.1]);
+
+  const glowOpacity = useTransform(smoothProgress, [0, 0.5, 1], [0, 0.4, 0.1]);
 
   return (
     <div ref={cardRef} className="relative mb-8 md:mb-12 last:mb-0">
@@ -88,11 +78,13 @@ function TimelineCard({
       <div className="absolute left-0 top-5 md:top-7 -translate-x-1/2 z-20">
         <motion.div
           style={{ opacity: glowOpacity, scale: 2 }}
-          className={`absolute inset-0 rounded-full bg-${color}-500 blur-2xl`}
+          className={`absolute inset-0 rounded-full ${
+            color === "blue" ? "bg-blue-500" : "bg-purple-500"
+          } blur-2xl`}
         />
         <motion.div
           style={{
-            scale: crownScale,
+            scale: smoothProgress,
             borderColor: borderColor,
             color: iconColor,
             borderWidth: "2px",
@@ -103,10 +95,10 @@ function TimelineCard({
         </motion.div>
       </div>
 
-      {/* THE SLIDING CARD: Now with Spring physics and Blur */}
+      {/* THE SLIDING CARD */}
       <motion.div
         style={{ opacity, x, scale, filter }}
-        className="ml-6 md:ml-10 text-left p-4 md:p-6 rounded-2xl bg-white/50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 shadow-sm transition-colors duration-500 backdrop-blur-sm"
+        className="ml-6 md:ml-10 text-left p-4 md:p-6 rounded-2xl bg-white/50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 shadow-sm backdrop-blur-sm"
       >
         <div className="space-y-1">
           <motion.span
@@ -127,7 +119,7 @@ function TimelineCard({
   );
 }
 
-// --- NEW INDEPENDENT COLUMN COMPONENT ---
+// --- INDEPENDENT COLUMN COMPONENT ---
 function TimelineColumn({
   title,
   icon,
@@ -142,9 +134,10 @@ function TimelineColumn({
   direction: "left" | "right";
 }) {
   const columnRef = useRef(null);
+  
   const { scrollYProgress } = useScroll({
     target: columnRef,
-    offset: ["start 85%", "end 60%"],
+    offset: ["start 80%", "end 80%"],
   });
 
   const lineHeight = useSpring(scrollYProgress, {
@@ -155,7 +148,9 @@ function TimelineColumn({
   return (
     <div ref={columnRef} className="space-y-6 md:space-y-12">
       <div className="flex items-center gap-3">
-        <div className={`p-2 bg-${color}-500/10 rounded-lg text-${color}-500`}>
+        <div className={`p-2 rounded-lg ${
+          color === "blue" ? "bg-blue-500/10 text-blue-500" : "bg-purple-500/10 text-purple-500"
+        }`}>
           {icon}
         </div>
         <h3 className="text-xl md:text-3xl font-bold tracking-tight uppercase text-zinc-900 dark:text-zinc-100">
@@ -164,11 +159,17 @@ function TimelineColumn({
       </div>
 
       <div className="relative ml-4 md:ml-6">
+        {/* Background Trace */}
         <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-zinc-200 dark:bg-zinc-800" />
+        
+        {/* Animated Line */}
         <motion.div
           style={{ scaleY: lineHeight }}
-          className={`absolute left-0 top-0 bottom-0 w-[1px] bg-${color === "blue" ? "blue-500" : "purple-500"} origin-top z-10`}
+          className={`absolute left-0 top-0 bottom-0 w-[1px] ${
+            color === "blue" ? "bg-blue-500" : "bg-purple-500"
+          } origin-top z-10`}
         />
+        
         <div className="space-y-0 pt-2">
           {items?.map((item, i) => (
             <TimelineCard
@@ -176,7 +177,6 @@ function TimelineColumn({
               item={item}
               direction={direction}
               color={color}
-              lineProgress={lineHeight}
             />
           ))}
         </div>
@@ -278,6 +278,7 @@ export default function About() {
 
       <motion.main className="relative z-10 max-w-6xl mx-auto px-6 pb-24">
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start mb-16 md:mb-32">
+          {/* Profile Section */}
           <div className="lg:col-span-5 space-y-6 order-1 lg:order-2 flex flex-col items-center">
             <div className="relative max-w-[280px] md:max-w-none w-full">
               <div className="aspect-square rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2 shadow-sm">
@@ -299,57 +300,33 @@ export default function About() {
                 target="_blank"
                 rel="noopener noreferrer"
                 whileTap={{ scale: 0.96 }}
-                className="group relative flex items-center justify-between w-full max-w-[280px] p-4 
-               bg-white/80 dark:bg-zinc-900/60 backdrop-blur-xl 
-               border-2 border-white/20 dark:border-zinc-800/50 
-               rounded-2xl overflow-hidden transition-all duration-500 
-               hover:border-blue-500/50 shadow-xl"
+                className="group relative flex items-center justify-between w-full max-w-[280px] p-4 bg-white/80 dark:bg-zinc-900/60 backdrop-blur-xl border-2 border-white/20 dark:border-zinc-800/50 rounded-2xl overflow-hidden transition-all duration-500 hover:border-blue-500/50 shadow-xl"
               >
                 <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 pointer-events-none" />
                 <div className="relative z-10 flex items-center gap-4">
                   <div className="p-2.5 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white rounded-xl shadow-sm group-hover:bg-blue-500 group-hover:text-white transition-colors duration-500">
-                    <FileText size={20} strokeWidth={2} />
+                    <FileText size={20} />
                   </div>
                   <div className="flex flex-col text-left">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-zinc-100">
-                      Professional CV
-                    </h4>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[8px] font-mono text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
-                        PDF_CORE
-                      </span>
-                      <div className="w-1 h-1 rounded-full bg-blue-500" />
-                      <span className="text-[8px] font-mono text-blue-500 font-bold uppercase tracking-widest">
-                        LATEST
-                      </span>
-                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-zinc-100">Professional CV</h4>
+                    <span className="text-[8px] font-mono text-blue-500 font-bold uppercase">LATEST</span>
                   </div>
                 </div>
-                <div className="relative z-10 text-zinc-400 group-hover:text-blue-500 group-hover:translate-y-0.5 transition-all duration-500">
-                  <Download size={18} strokeWidth={2.5} />
-                </div>
-                <div className="absolute inset-0 -z-10 bg-blue-50 dark:bg-blue-500/[0.05] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+                <Download size={18} className="relative z-10 text-zinc-400 group-hover:text-blue-500 transition-colors" />
               </motion.a>
             )}
           </div>
 
+          {/* About Text */}
           <div className="lg:col-span-7 space-y-6 md:space-y-10 order-2 lg:order-1 flex flex-col items-center md:items-start text-center md:text-left">
-            <h2 className="text-2xl md:text-4xl font-bold uppercase text-zinc-900 dark:text-zinc-100">
-              About Me
-            </h2>
-            <p className="text-zinc-600 dark:text-zinc-400 text-base md:text-2xl leading-relaxed font-normal md:font-light text-justify">
+            <h2 className="text-2xl md:text-4xl font-bold uppercase text-zinc-900 dark:text-zinc-100">About Me</h2>
+            <p className="text-zinc-600 dark:text-zinc-400 text-base md:text-2xl leading-relaxed text-justify">
               {about?.about_text}
             </p>
             <Link href="/contact">
               <div className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold group cursor-pointer">
-                <span className="text-xs md:text-sm uppercase tracking-widest border-b border-current pb-0.5">
-                  Let&apos;s Connect
-                </span>
-                <ArrowRight
-                  size={16}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
+                <span className="text-xs md:text-sm uppercase tracking-widest border-b border-current pb-0.5">Let's Connect</span>
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
           </div>
