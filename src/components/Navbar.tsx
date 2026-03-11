@@ -69,33 +69,55 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full border border-zinc-200/50 dark:border-zinc-800/50 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`relative px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 rounded-full ${
-                  isActive(link.href)
-                    ? "text-zinc-900 dark:text-white"
-                    : "text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
-                }`}
-              >
-                {isActive(link.href) && (
-                  <motion.div
-                    layoutId="nav-active"
-                    className="absolute inset-0 z-[-1] rounded-full bg-zinc-100 dark:bg-zinc-800 shadow-inner"
-                    transition={{
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 30,
-                      duration: 0.2,
-                    }}
-                  />
-                )}
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="relative px-5 py-2 group rounded-full"
+                >
+                  {/* Text: Tiny vertical 'pop' when it becomes active */}
+                  <motion.span
+                    animate={{ y: active ? -1 : 0 }}
+                    className={`relative z-10 block text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${
+                      active
+                        ? "text-zinc-900 dark:text-white"
+                        : "text-zinc-400 group-hover:text-zinc-900 dark:hover:text-zinc-100"
+                    }`}
+                  >
+                    {link.label}
+                  </motion.span>
 
+                  {active && (
+                    <motion.div
+                      layoutId="nav-active"
+                      // The Design: Works perfectly in Light (Zinc tint) and Dark (White glass)
+                      className="absolute inset-0 z-0 rounded-full 
+                       bg-zinc-900/5 border border-zinc-900/10 shadow-sm
+                       dark:bg-white/10 dark:border-white/10 dark:backdrop-blur-md dark:shadow-none"
+                      // THE GOOEY STRETCH PHYSICS
+                      transition={{
+                        type: "spring",
+                        stiffness: 350, // Tension of the "rubber band"
+                        damping: 25, // Controls the "snap" back to shape
+                        mass: 0.5, // Lower mass makes it stretch more during travel
+                      }}
+                    >
+                      {/* Glossy Reflection for both modes */}
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/20 to-transparent dark:from-white/5 opacity-50" />
+
+                      {/* The "Snap" Accent line at the bottom */}
+                      <motion.div
+                        layoutId="nav-accent-line"
+                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-[1.5px] bg-zinc-900/20 dark:bg-white/30 rounded-full"
+                      />
+                    </motion.div>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
           <div className="flex items-center gap-3 relative z-[120]">
             <ThemeSwitcher />
 

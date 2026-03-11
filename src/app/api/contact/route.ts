@@ -59,6 +59,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Send email notification to your Gmail inbox
+    if (!resendApiKey) {
+      console.error(
+        "ERROR: RESEND_API_KEY is not set. Emails will not be sent in production. Add it to your environment variables.",
+      );
+    }
+    if (!PORTFOLIO_EMAIL) {
+      console.error(
+        "ERROR: NEXT_PUBLIC_PORTFOLIO_EMAIL is not set. Emails will not be sent in production. Add it to your environment variables.",
+      );
+    }
+
     if (resendApiKey && PORTFOLIO_EMAIL) {
       try {
         const response = await resend.emails.send({
@@ -107,11 +118,12 @@ export async function POST(request: NextRequest) {
         });
 
         if (response.error) {
-          console.error("Failed to send email notification:", response.error);
+          console.error("Resend API Error:", response.error);
+          // Email failed but message is stored in DB
         } else if (response.data?.id) {
-          console.log("Email sent successfully:", response.data.id);
+          console.log("✅ Email sent successfully:", response.data.id);
         } else {
-          console.warn("Email may not have been sent successfully");
+          console.warn("⚠️  Email may not have been sent successfully");
         }
       } catch (emailError) {
         console.error("Failed to send email notification:", emailError);

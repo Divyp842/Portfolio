@@ -168,30 +168,65 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.5 }}
-                  className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 pt-4 relative z-20"
+                  className="flex flex-col sm:flex-row justify-center lg:justify-start gap-6 pt-4 relative z-20"
                 >
-                  <Link href="/projects" className="w-full sm:w-auto group">
+                  {/* PROJECT BUTTON (SOLID) */}
+                  <Link
+                    href="/projects"
+                    className="w-full sm:w-auto relative group"
+                  >
                     <motion.button
-                      whileTap={{ scale: 0.95 }}
-                      className="relative w-full px-8 py-3.5 bg-transparent border-2 border-zinc-900 dark:border-white text-zinc-900 dark:text-white font-black text-[9px] uppercase tracking-[0.2em] overflow-hidden transition-colors duration-500 hover:text-white dark:hover:text-zinc-900"
+                      whileHover={{ x: -2, y: -2 }}
+                      whileTap={{ x: 2, y: 2 }}
+                      className="relative w-full px-8 py-3.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 border-2 border-zinc-900 dark:border-white font-black text-[10px] uppercase tracking-[0.2em] z-10"
                     >
-                      <span className="relative z-10 flex items-center justify-center gap-2">
+                      <span className="flex items-center justify-center gap-2">
                         VIEW PROJECTS <ArrowRight size={14} />
                       </span>
-                      <div className="absolute inset-0 z-0 bg-zinc-900 dark:bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
                     </motion.button>
+
+                    {/* THE GLITCH SHADOW */}
+                    <motion.div
+                      variants={{
+                        hover: {
+                          x: [4, 6, 2, 4], // Jitter movement
+                          skewX: [0, -5, 5, 0], // Slight glitch skew
+                          transition: { repeat: Infinity, duration: 0.2 },
+                        },
+                      }}
+                      whileHover="hover"
+                      className="absolute inset-0 border-2 border-zinc-900 dark:border-white translate-x-[4px] translate-y-[4px] z-0 pointer-events-none"
+                    />
                   </Link>
 
-                  <Link href="/contact" className="w-full sm:w-auto group">
+                  {/* CONTACT BUTTON (OUTLINE) */}
+                  <Link
+                    href="/contact"
+                    className="w-full sm:w-auto relative group"
+                  >
                     <motion.button
-                      whileTap={{ scale: 0.95 }}
-                      className="relative w-full px-8 py-3.5 bg-transparent border-2 border-zinc-900 dark:border-white text-zinc-900 dark:text-white font-black text-[9px] uppercase tracking-[0.2em] overflow-hidden transition-colors duration-500 hover:text-white dark:hover:text-zinc-900"
+                      whileHover={{ x: -2, y: -2 }}
+                      whileTap={{ x: 2, y: 2 }}
+                      className="relative w-full px-8 py-3.5 bg-transparent border-2 border-zinc-900 dark:border-white text-zinc-900 dark:text-white font-black text-[10px] uppercase tracking-[0.2em] z-10 transition-colors hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-900"
                     >
-                      <span className="relative z-10 flex items-center justify-center gap-2">
+                      <span className="flex items-center justify-center gap-2">
                         GET IN TOUCH <ArrowRight size={14} />
                       </span>
-                      <div className="absolute inset-0 z-0 bg-zinc-900 dark:bg-white -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
                     </motion.button>
+
+                    {/* THE REACTIVE SHADOW */}
+                    <motion.div
+                      variants={{
+                        hover: {
+                          x: 6,
+                          y: 6,
+                          backgroundColor: "rgba(24, 24, 27, 0.1)", // Slight tint on hover
+                          transition: { type: "spring", stiffness: 300 },
+                        },
+                      }}
+                      whileHover="hover"
+                      className="absolute inset-0 border-2 border-zinc-900 dark:border-white translate-x-[4px] translate-y-[4px] z-0 opacity-20 group-hover:opacity-100 pointer-events-none"
+                    />
                   </Link>
                 </motion.div>
               </div>
@@ -203,20 +238,22 @@ export default function Home() {
               >
                 <div className="relative group">
                   <div className="relative w-44 h-44 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full p-2 border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-sm shadow-2xl overflow-hidden">
-                    
                     {/* Placeholder Loader: Shown only while image is downloading */}
                     {!imageLoaded && (
                       <div className="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-900">
-                        <Loader className="animate-spin text-zinc-400" size={24} />
+                        <Loader
+                          className="animate-spin text-zinc-400"
+                          size={24}
+                        />
                       </div>
                     )}
 
-                    <motion.div 
+                    <motion.div
                       className="relative h-full w-full rounded-full overflow-hidden"
                       initial={{ opacity: 0, filter: "blur(10px)" }}
-                      animate={{ 
-                        opacity: imageLoaded ? 1 : 0, 
-                        filter: imageLoaded ? "blur(0px)" : "blur(10px)" 
+                      animate={{
+                        opacity: imageLoaded ? 1 : 0,
+                        filter: imageLoaded ? "blur(0px)" : "blur(10px)",
                       }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
                     >
@@ -230,7 +267,7 @@ export default function Home() {
                       />
                     </motion.div>
                   </div>
-                  
+
                   <motion.div
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 4, repeat: Infinity }}
@@ -246,7 +283,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/* --- CLEAN HUD --- */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.3 }}
         className="fixed bottom-4 md:bottom-6 left-0 right-0 z-0 pointer-events-none px-6 md:px-10"
@@ -259,7 +296,7 @@ export default function Home() {
             © {new Date().getFullYear()} {profile?.name?.split(" ")[0]}
           </span>
         </div>
-      </motion.div>
+      </motion.div> */}
     </div>
   );
 }

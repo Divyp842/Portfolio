@@ -77,15 +77,18 @@ export default function Contact() {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         toast.success("Message sent! I'll get back to you soon.");
         setFormData({ name: "", email: "", message: "" });
       } else {
-        toast.error("Failed to send. Please try again.");
+        console.error("API Error:", data);
+        toast.error(data.error || "Failed to send. Please try again.");
       }
     } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong");
+      console.error("Request error:", err);
+      toast.error("Something went wrong. Check console for details.");
     } finally {
       setIsSubmitting(false);
     }
