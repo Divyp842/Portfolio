@@ -11,6 +11,7 @@ import {
   Sparkles,
   Loader2,
   Code2,
+  Check,
 } from "lucide-react";
 import { Profile } from "@/types";
 import toast from "react-hot-toast";
@@ -42,6 +43,7 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [copiedEmail, setCopiedEmail] = useState(false);
 
   // Added effect to trigger the reveal animation after a brief loading state
   useEffect(() => {
@@ -91,6 +93,26 @@ export default function Contact() {
       toast.error("Something went wrong. Check console for details.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleEmailClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+
+    if (profile?.email) {
+      navigator.clipboard
+        .writeText(profile.email)
+        .then(() => {
+          setCopiedEmail(true);
+          toast.success(`Email copied: ${profile.email}`);
+
+          setTimeout(() => setCopiedEmail(false), 2000);
+        })
+        .catch(() => {
+          toast.error("Failed to copy email");
+        });
+    } else {
+      toast.error("Email not available");
     }
   };
 
@@ -219,10 +241,13 @@ export default function Contact() {
               </form>
             </div>
           </div>
+          <p className="mt-8 text-center text-[10px] text-zinc-400 font-mono uppercase tracking-widest">
+            Reply time: ~24 hours
+          </p>
         </motion.div>
 
         {/* Social Dock */}
-        <motion.footer
+        {/* <motion.footer
           variants={itemVariants}
           className="mt-20 w-full max-w-lg"
         >
@@ -232,41 +257,50 @@ export default function Contact() {
                 icon: Github,
                 href: profile?.github || "#",
                 label: "GitHub",
+                isEmail: false,
               },
               {
                 icon: Linkedin,
                 href: profile?.linkedin || "#",
                 label: "LinkedIn",
+                isEmail: false,
               },
               {
                 icon: Mail,
-                href: profile?.email
-                  ? `https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${profile.email}`
-                  : "#",
+                href: "#",
                 label: "Email",
+                isEmail: true,
               },
               {
                 icon: Code2,
                 href: profile?.leetcode || "#",
                 label: "LeetCode",
+                isEmail: false,
               },
             ].map((link, i) => (
               <a
                 key={i}
                 href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
+                onClick={link.isEmail ? handleEmailClick : undefined}
+                target={!link.isEmail ? "_blank" : undefined}
+                rel={!link.isEmail ? "noopener noreferrer" : undefined}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:border-cyan-500/50 transition-all text-xs font-bold shadow-sm"
               >
-                <link.icon size={16} />
-                <span className="hidden sm:inline">{link.label}</span>
+                {link.isEmail && copiedEmail ? (
+                  <Check size={16} className="text-emerald-500 animate-pulse" />
+                ) : (
+                  <link.icon size={16} />
+                )}
+                <span className="hidden sm:inline">
+                  {link.isEmail && copiedEmail ? "Copied!" : link.label}
+                </span>
               </a>
             ))}
           </div>
           <p className="mt-8 text-center text-[10px] text-zinc-400 font-mono uppercase tracking-widest">
             Reply time: ~24 hours
           </p>
-        </motion.footer>
+        </motion.footer> */}
       </motion.main>
     </motion.div>
   );
