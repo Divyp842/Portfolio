@@ -134,7 +134,11 @@ export default function Certificates() {
                       }`}
                     >
                       {cert.is_featured ? (
-                        <Star size={18} className="md:w-6 md:h-6" fill="currentColor" />
+                        <Star
+                          size={18}
+                          className="md:w-6 md:h-6"
+                          fill="currentColor"
+                        />
                       ) : (
                         <Award size={18} className="md:w-6 md:h-6" />
                       )}

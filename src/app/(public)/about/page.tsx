@@ -7,6 +7,7 @@ import {
   useScroll,
   useSpring,
   useTransform,
+  AnimatePresence
 } from "framer-motion";
 import type { About } from "@/types";
 import {
@@ -32,20 +33,17 @@ function TimelineCard({
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Use the card itself as the scroll target for pinpoint accuracy
   const { scrollYProgress } = useScroll({
     target: cardRef,
-    offset: ["start 90%", "start 60%"], // Triggers as it enters the bottom of screen
+    offset: ["start 90%", "start 60%"],
   });
 
-  // Create a spring-smoothed version of the scroll progress
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 60,
     damping: 20,
     restDelta: 0.001,
   });
 
-  // Map animations to the smooth scroll progress (0 to 1)
   const opacity = useTransform(smoothProgress, [0, 0.3], [0, 1]);
   const scale = useTransform(smoothProgress, [0, 1], [0.92, 1]);
   const x = useTransform(
@@ -54,8 +52,8 @@ function TimelineCard({
     [direction === "left" ? -60 : 60, 0]
   );
   
-  // Visual polish: Blur and Glow
-  const blurValue = useTransform(smoothProgress, [0, 0.8], [12, 0]);
+  // REDUCED BLUR: Changed from 12 to 4 for a more natural feel
+  const blurValue = useTransform(smoothProgress, [0, 0.8], [4, 0]); 
   const filter = useTransform(blurValue, (v) => `blur(${v}px)`);
   
   const iconColor = useTransform(
@@ -74,7 +72,6 @@ function TimelineCard({
 
   return (
     <div ref={cardRef} className="relative mb-8 md:mb-12 last:mb-0">
-      {/* THE CROWN & SYNCED GLOW */}
       <div className="absolute left-0 top-5 md:top-7 -translate-x-1/2 z-20">
         <motion.div
           style={{ opacity: glowOpacity, scale: 2 }}
@@ -95,7 +92,6 @@ function TimelineCard({
         </motion.div>
       </div>
 
-      {/* THE SLIDING CARD */}
       <motion.div
         style={{ opacity, x, scale, filter }}
         className="ml-6 md:ml-10 text-left p-4 md:p-6 rounded-2xl bg-white/50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 shadow-sm backdrop-blur-sm"
@@ -159,17 +155,13 @@ function TimelineColumn({
       </div>
 
       <div className="relative ml-4 md:ml-6">
-        {/* Background Trace */}
         <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-zinc-200 dark:bg-zinc-800" />
-        
-        {/* Animated Line */}
         <motion.div
           style={{ scaleY: lineHeight }}
           className={`absolute left-0 top-0 bottom-0 w-[1px] ${
             color === "blue" ? "bg-blue-500" : "bg-purple-500"
           } origin-top z-10`}
         />
-        
         <div className="space-y-0 pt-2">
           {items?.map((item, i) => (
             <TimelineCard
@@ -215,6 +207,7 @@ function TimelineSection({
 export default function About() {
   const [about, setAbout] = useState<About | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [imgLoaded, setImgLoaded] = useState(false); // NEW: Image loading state
   const [isMobile, setIsMobile] = useState(false);
 
   const { scrollYProgress } = useScroll();
@@ -282,9 +275,18 @@ export default function About() {
           <div className="lg:col-span-5 space-y-6 order-1 lg:order-2 flex flex-col items-center">
             <div className="relative max-w-[280px] md:max-w-none w-full">
               <div className="aspect-square rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2 shadow-sm">
-                <div className="w-full h-full rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                <div className="relative w-full h-full rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                  {/* SKELETON LOADER */}
+                  {!imgLoaded && (
+                    <div className="absolute inset-0 bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
+                  )}
+                  
                   {about?.profile_photo && (
-                    <img
+                    <motion.img
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: imgLoaded ? 1 : 0 }}
+                      transition={{ duration: 0.5 }}
+                      onLoad={() => setImgLoaded(true)}
                       src={about.profile_photo}
                       alt="Profile"
                       className="w-full h-full object-cover md:grayscale md:hover:grayscale-0 md:hover:scale-110 transition-all duration-700"
@@ -317,7 +319,6 @@ export default function About() {
             )}
           </div>
 
-          {/* About Text */}
           <div className="lg:col-span-7 space-y-6 md:space-y-10 order-2 lg:order-1 flex flex-col items-center md:items-start text-center md:text-left">
             <h2 className="text-2xl md:text-4xl font-bold uppercase text-zinc-900 dark:text-zinc-100">About Me</h2>
             <p className="text-zinc-600 dark:text-zinc-400 text-base md:text-2xl leading-relaxed text-justify">
