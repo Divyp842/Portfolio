@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, Variants } from "framer-motion";
-import { Calendar, ArrowRight, Loader2, Star } from "lucide-react";
+import { Calendar, ArrowRight, Loader2, Star, FileText } from "lucide-react";
 import { BlogPost } from "@/types";
 
 const containerVariants: Variants = {
@@ -124,6 +124,25 @@ export default function Blog() {
         </header>
 
         <div className="space-y-20 md:space-y-32">
+          {/* Empty State */}
+          {posts.length === 0 && (
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col items-center justify-center py-20 md:py-32 text-center"
+            >
+              <div className="p-5 rounded-full bg-amber-50 dark:bg-amber-950/30 mb-6">
+                <FileText size={36} className="text-amber-600" />
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold mb-3 text-zinc-900 dark:text-zinc-100">
+                No Blog Posts Yet
+              </h3>
+              <p className="text-zinc-500 dark:text-zinc-400 max-w-md text-base font-light mb-8">
+                Check back soon for thoughtful insights and technical
+                deep-dives.
+              </p>
+            </motion.div>
+          )}
+
           {/* Featured Section */}
           {featuredPost && (
             <motion.div variants={itemVariants}>
@@ -134,7 +153,9 @@ export default function Blog() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] p-4 md:p-8 hover:bg-white dark:hover:bg-zinc-900 transition-all duration-500 shadow-xl shadow-amber-500/5">
                   <div className="lg:col-span-7 aspect-[16/9] md:aspect-[21/9] lg:aspect-auto lg:h-[400px] overflow-hidden rounded-2xl md:rounded-[1.5rem] bg-zinc-100 dark:bg-zinc-800 ring-1 ring-zinc-200 dark:ring-zinc-800 relative">
                     {loadingImages.has(`featured-${featuredPost.id}`) && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-zinc-200 to-zinc-100 dark:from-zinc-700 dark:to-zinc-600 animate-pulse" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-zinc-200 dark:bg-zinc-800 animate-pulse">
+                        <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
+                      </div>
                     )}
                     {featuredPost.image && (
                       <img
@@ -178,6 +199,24 @@ export default function Blog() {
           )}
 
           {/* Grid Section */}
+          {posts.length > 0 && restPosts.length === 0 && !featuredPost && (
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col items-center justify-center py-20 md:py-32 text-center"
+            >
+              <div className="p-5 rounded-full bg-amber-50 dark:bg-amber-950/30 mb-6">
+                <FileText size={36} className="text-amber-600" />
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold mb-3 text-zinc-900 dark:text-zinc-100">
+                No Blog Posts Yet
+              </h3>
+              <p className="text-zinc-500 dark:text-zinc-400 max-w-md text-base font-light">
+                Check back soon for thoughtful insights and technical
+                deep-dives.
+              </p>
+            </motion.div>
+          )}
+
           {restPosts.length > 0 && (
             <div className="space-y-12">
               <motion.div
@@ -203,7 +242,9 @@ export default function Blog() {
                     >
                       <div className="aspect-[16/10] mb-6 overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/50 dark:border-zinc-800/50 relative">
                         {loadingImages.has(`post-${post.id}`) && (
-                          <div className="absolute inset-0 bg-gradient-to-r from-zinc-200 to-zinc-100 dark:from-zinc-700 dark:to-zinc-600 animate-pulse" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-zinc-200 dark:bg-zinc-800 animate-pulse">
+                            <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
+                          </div>
                         )}
                         {post.image && (
                           <img

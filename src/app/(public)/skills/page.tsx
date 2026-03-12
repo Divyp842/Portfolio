@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Skill } from "@/types";
-import { Loader2, Activity, Star } from "lucide-react";
+import { Loader2, Activity, Star, Zap } from "lucide-react";
 
 const categories = ["frontend", "backend", "database", "tools"] as const;
 
@@ -166,68 +166,88 @@ export default function Skills() {
             className="w-full"
           >
             <AnimatePresence mode="wait">
-              <motion.div
-                key={activeCat}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6"
-              >
-                {filteredSkills.map((skill) => (
-                  <motion.div
-                    key={skill.id}
-                    whileHover={{ y: -5, translateZ: 20 }}
-                    className="group relative p-5 rounded-[2rem] border border-zinc-200/50 dark:border-zinc-800/50 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl transition-all duration-300 hover:border-blue-500/40 overflow-hidden"
-                  >
-                    <div className="relative z-10 flex flex-col gap-5">
-                      <div className="flex justify-between items-start">
-                        <div className="w-10 h-10 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center p-2.5 transition-transform group-hover:rotate-6">
-                          <img
-                            src={`https://cdn.simpleicons.org/${getIconSlug(skill.name)}`}
-                            alt={skill.name}
-                            className="w-full h-full object-contain dark:brightness-200"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                              const parent = e.currentTarget.parentElement;
-                              if (parent)
-                                parent.innerHTML = `<span class="text-[10px] font-bold opacity-30 uppercase">${skill.name.charAt(0)}</span>`;
-                            }}
-                          />
-                        </div>
-                        <div className="flex gap-[2px]">
-                          {[1, 2, 3].map((dot) => (
-                            <div
-                              key={dot}
-                              className={`h-1 w-2 md:w-2.5 rounded-full ${
-                                dot <=
-                                (skill.level === "advanced"
-                                  ? 3
-                                  : skill.level === "intermediate"
-                                    ? 2
-                                    : 1)
-                                  ? "bg-blue-600 shadow-[0_0_8px_rgba(59,130,246,0.4)]"
-                                  : "bg-zinc-200 dark:border-zinc-800"
-                              }`}
+              {filteredSkills.length === 0 ? (
+                <motion.div
+                  key={`empty-${activeCat}`}
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  className="flex flex-col items-center justify-center py-20"
+                >
+                  <div className="p-5 rounded-full bg-blue-50 dark:bg-blue-950/30 mb-6">
+                    <Zap size={36} className="text-blue-600" />
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold mb-3 text-zinc-900 dark:text-zinc-100">
+                    No Skills Yet
+                  </h3>
+                  <p className="text-zinc-500 dark:text-zinc-400 max-w-md text-base font-light text-center">
+                    No skills added in this category yet. Check back soon!
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key={activeCat}
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6"
+                >
+                  {filteredSkills.map((skill) => (
+                    <motion.div
+                      key={skill.id}
+                      whileHover={{ y: -5, translateZ: 20 }}
+                      className="group relative p-5 rounded-[2rem] border border-zinc-200/50 dark:border-zinc-800/50 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl transition-all duration-300 hover:border-blue-500/40 overflow-hidden"
+                    >
+                      <div className="relative z-10 flex flex-col gap-5">
+                        <div className="flex justify-between items-start">
+                          <div className="w-10 h-10 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center p-2.5 transition-transform group-hover:rotate-6">
+                            <img
+                              src={`https://cdn.simpleicons.org/${getIconSlug(skill.name)}`}
+                              alt={skill.name}
+                              className="w-full h-full object-contain dark:brightness-200"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                                const parent = e.currentTarget.parentElement;
+                                if (parent)
+                                  parent.innerHTML = `<span class="text-[10px] font-bold opacity-30 uppercase">${skill.name.charAt(0)}</span>`;
+                              }}
                             />
-                          ))}
+                          </div>
+                          <div className="flex gap-[2px]">
+                            {[1, 2, 3].map((dot) => (
+                              <div
+                                key={dot}
+                                className={`h-1 w-2 md:w-2.5 rounded-full ${
+                                  dot <=
+                                  (skill.level === "advanced"
+                                    ? 3
+                                    : skill.level === "intermediate"
+                                      ? 2
+                                      : 1)
+                                    ? "bg-blue-600 shadow-[0_0_8px_rgba(59,130,246,0.4)]"
+                                    : "bg-zinc-200 dark:border-zinc-800"
+                                }`}
+                              />
+                            ))}
+                          </div>
                         </div>
-                      </div>
 
-                      <div>
-                        <h3 className="text-[10px] md:text-xs font-black uppercase tracking-tighter text-zinc-900 dark:text-zinc-100 truncate">
-                          {skill.name}
-                        </h3>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <div className="w-1 h-1 rounded-full bg-blue-600 animate-pulse" />
-                          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">
-                            {skill.level}
-                          </span>
+                        <div>
+                          <h3 className="text-[10px] md:text-xs font-black uppercase tracking-tighter text-zinc-900 dark:text-zinc-100 truncate">
+                            {skill.name}
+                          </h3>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <div className="w-1 h-1 rounded-full bg-blue-600 animate-pulse" />
+                            <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">
+                              {skill.level}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
             </AnimatePresence>
           </motion.div>
         </div>

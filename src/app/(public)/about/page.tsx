@@ -2,12 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import {
-  motion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import type { About } from "@/types";
 import {
   Loader2,
@@ -25,7 +20,7 @@ function TimelineCard({
   item,
   direction,
   color,
-  isMobile, // Pass isMobile to adjust movement
+  isMobile,
 }: {
   item: any;
   direction: "left" | "right";
@@ -36,87 +31,101 @@ function TimelineCard({
 
   const { scrollYProgress } = useScroll({
     target: cardRef,
-    offset: ["start 95%", "start 65%"], // Adjusted offset for better mobile timing
+    offset: ["start 95%", "start 65%"],
   });
 
-  /**
-   * FIX: ANTI-JERK SPRING
-   * Increased stiffness and damping. This prevents the "bouncing" 
-   * effect that feels like lag/jerking on high-refresh-rate mobile screens.
-   */
+  // Tighter spring on mobile: settles fast, no lag, no bounce
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 90, // Increased from 60
-    damping: 25,   // Increased from 20
-    mass: 0.5,     // Lighter mass for snappier response
+    stiffness: isMobile ? 200 : 120,
+    damping: isMobile ? 40 : 30,
+    mass: isMobile ? 0.3 : 0.5,
     restDelta: 0.001,
   });
 
   const opacity = useTransform(smoothProgress, [0, 0.4], [0, 1]);
-  const scale = useTransform(smoothProgress, [0, 1], [0.95, 1]);
-  
-  /**
-   * FIX: REDUCED X-TRAVEL
-   * On mobile, we reduce the slide-in distance from 60 to 25.
-   * Large X-movements on mobile cause the eye to lose track of the text, feeling "jerky".
-   */
-  const xDistance = isMobile ? 25 : 60;
+  const scale = useTransform(
+    smoothProgress,
+    [0, 1],
+    [isMobile ? 0.97 : 0.95, 1],
+  );
+  const xDistance = isMobile ? 22 : 50;
   const x = useTransform(
     smoothProgress,
     [0, 1],
-    [direction === "left" ? -xDistance : xDistance, 0]
+    [direction === "left" ? -xDistance : xDistance, 0],
   );
-  
-  // FIX: REDUCED BLUR (2px)
-  const blurValue = useTransform(smoothProgress, [0, 0.8], [2, 0]);
+
+  // Desktop-only expensive effects
+  const blurValue = useTransform(smoothProgress, [0, 0.8], [3, 0]);
   const filter = useTransform(blurValue, (v) => `blur(${v}px)`);
-  
   const iconColor = useTransform(
     smoothProgress,
     [0, 1],
-    ["#a1a1aa", color === "blue" ? "#3b82f6" : "#a855f7"]
+    ["#a1a1aa", color === "blue" ? "#3b82f6" : "#a855f7"],
   );
-  
   const borderColor = useTransform(
     smoothProgress,
     [0, 1],
-    ["#e4e4e7", color === "blue" ? "#3b82f6" : "#a855f7"]
+    ["#e4e4e7", color === "blue" ? "#3b82f6" : "#a855f7"],
   );
-
   const glowOpacity = useTransform(smoothProgress, [0, 0.5, 1], [0, 0.4, 0.1]);
+  const accentColor = color === "blue" ? "#3b82f6" : "#a855f7";
 
   return (
     <div ref={cardRef} className="relative mb-8 md:mb-12 last:mb-0">
       <div className="absolute left-0 top-5 md:top-7 -translate-x-1/2 z-20">
+        {!isMobile && (
+          <motion.div
+            style={{ opacity: glowOpacity, scale: 2 }}
+            className={`absolute inset-0 rounded-full ${
+              color === "blue" ? "bg-blue-500" : "bg-purple-500"
+            } blur-2xl`}
+          />
+        )}
         <motion.div
-          style={{ opacity: glowOpacity, scale: 2 }}
-          className={`absolute inset-0 rounded-full ${
-            color === "blue" ? "bg-blue-500" : "bg-purple-500"
-          } blur-2xl`}
-        />
-        <motion.div
-          style={{
-            scale: smoothProgress,
-            borderColor: borderColor,
-            color: iconColor,
-            borderWidth: "2px",
-          }}
-          className="relative w-5 h-5 md:w-6 md:h-6 rounded-full bg-white dark:bg-[#050505] border flex items-center justify-center shadow-md"
+          style={
+            isMobile
+              ? { scale: smoothProgress }
+              : {
+                  scale: smoothProgress,
+                  borderColor,
+                  color: iconColor,
+                  borderWidth: "2px",
+                }
+          }
+          className={`relative w-5 h-5 md:w-6 md:h-6 rounded-full bg-white dark:bg-[#050505] border-2 flex items-center justify-center shadow-md ${
+            isMobile
+              ? color === "blue"
+                ? "border-blue-500 text-blue-500"
+                : "border-purple-500 text-purple-500"
+              : "border-zinc-200"
+          }`}
         >
           <Crown size={10} />
         </motion.div>
       </div>
 
       <motion.div
-        style={{ opacity, x, scale, filter }}
-        className="ml-6 md:ml-10 text-left p-4 md:p-6 rounded-2xl bg-white/50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 shadow-sm backdrop-blur-sm"
+        style={isMobile ? { opacity, x, scale } : { opacity, x, scale, filter }}
+        className="ml-6 md:ml-10 text-left p-4 md:p-6 rounded-2xl bg-white/50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 shadow-sm md:backdrop-blur-sm"
       >
         <div className="space-y-1">
-          <motion.span
-            style={{ color: iconColor }}
-            className="text-[9px] font-bold uppercase tracking-widest"
-          >
-            {item.year}
-          </motion.span>
+          {isMobile ? (
+            <span
+              className={`text-[9px] font-bold uppercase tracking-widest ${
+                color === "blue" ? "text-blue-500" : "text-purple-500"
+              }`}
+            >
+              {item.year}
+            </span>
+          ) : (
+            <motion.span
+              style={{ color: iconColor }}
+              className="text-[9px] font-bold uppercase tracking-widest"
+            >
+              {item.year}
+            </motion.span>
+          )}
           <h4 className="text-base md:text-xl font-semibold md:font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             {item.degree || item.title}
           </h4>
@@ -146,7 +155,7 @@ function TimelineColumn({
   isMobile: boolean;
 }) {
   const columnRef = useRef(null);
-  
+
   const { scrollYProgress } = useScroll({
     target: columnRef,
     offset: ["start 80%", "end 80%"],
@@ -160,9 +169,13 @@ function TimelineColumn({
   return (
     <div ref={columnRef} className="space-y-6 md:space-y-12">
       <div className="flex items-center gap-3">
-        <div className={`p-2 rounded-lg ${
-          color === "blue" ? "bg-blue-500/10 text-blue-500" : "bg-purple-500/10 text-purple-500"
-        }`}>
+        <div
+          className={`p-2 rounded-lg ${
+            color === "blue"
+              ? "bg-blue-500/10 text-blue-500"
+              : "bg-purple-500/10 text-purple-500"
+          }`}
+        >
           {icon}
         </div>
         <h3 className="text-xl md:text-3xl font-bold tracking-tight uppercase text-zinc-900 dark:text-zinc-100">
@@ -180,12 +193,12 @@ function TimelineColumn({
         />
         <div className="space-y-0 pt-2">
           {items?.map((item, i) => (
-            <TimelineCard 
-                key={i} 
-                item={item} 
-                direction={direction} 
-                color={color} 
-                isMobile={isMobile}
+            <TimelineCard
+              key={i}
+              item={item}
+              direction={direction}
+              color={color}
+              isMobile={isMobile}
             />
           ))}
         </div>
@@ -248,17 +261,20 @@ export default function About() {
       <header className="relative z-10 max-w-6xl mx-auto px-6 pt-24 md:pt-48 pb-10 flex flex-col items-center md:items-start text-center md:text-left">
         <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/50 mb-4">
           <Star size={12} className="text-blue-600" />
-          <span className="text-[9px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">Profile</span>
+          <span className="text-[9px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">
+            Profile
+          </span>
         </div>
         <h1 className="text-4xl md:text-9xl font-bold md:font-black tracking-tight md:tracking-tighter leading-tight md:leading-[0.85] uppercase text-zinc-900 dark:text-zinc-100">
           Who <br className="md:hidden" />{" "}
-          <span className="text-zinc-400 dark:text-zinc-700 italic font-medium">I Am.</span>
+          <span className="text-zinc-400 dark:text-zinc-700 italic font-medium">
+            I Am.
+          </span>
         </h1>
       </header>
 
       <motion.main className="relative z-10 max-w-6xl mx-auto px-6 pb-24">
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start mb-16 md:mb-32">
-          
           <div className="lg:col-span-5 space-y-6 order-1 lg:order-2 flex flex-col items-center">
             <div className="relative max-w-[280px] md:max-w-none w-full">
               <div className="aspect-square rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2 shadow-sm">
@@ -297,24 +313,38 @@ export default function About() {
                     <FileText size={20} />
                   </div>
                   <div className="flex flex-col text-left">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-zinc-100">Professional CV</h4>
-                    <span className="text-[8px] font-mono text-blue-500 font-bold uppercase">LATEST</span>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-zinc-100">
+                      Professional CV
+                    </h4>
+                    <span className="text-[8px] font-mono text-blue-500 font-bold uppercase">
+                      LATEST
+                    </span>
                   </div>
                 </div>
-                <Download size={18} className="relative z-10 text-zinc-400 group-hover:text-blue-500 transition-colors" />
+                <Download
+                  size={18}
+                  className="relative z-10 text-zinc-400 group-hover:text-blue-500 transition-colors"
+                />
               </motion.a>
             )}
           </div>
 
           <div className="lg:col-span-7 space-y-6 md:space-y-10 order-2 lg:order-1 flex flex-col items-center md:items-start text-center md:text-left">
-            <h2 className="text-2xl md:text-4xl font-bold uppercase text-zinc-900 dark:text-zinc-100">About Me</h2>
+            <h2 className="text-2xl md:text-4xl font-bold uppercase text-zinc-900 dark:text-zinc-100">
+              About Me
+            </h2>
             <p className="text-zinc-600 dark:text-zinc-400 text-base md:text-2xl leading-relaxed text-justify">
               {about?.about_text}
             </p>
             <Link href="/contact">
               <div className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold group cursor-pointer">
-                <span className="text-xs md:text-sm uppercase tracking-widest border-b border-current pb-0.5">Let's Connect</span>
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                <span className="text-xs md:text-sm uppercase tracking-widest border-b border-current pb-0.5">
+                  Let's Connect
+                </span>
+                <ArrowRight
+                  size={16}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
               </div>
             </Link>
           </div>

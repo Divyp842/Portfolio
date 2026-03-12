@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { ExternalLink, Loader2, Award, Star } from "lucide-react";
+import { ExternalLink, Loader2, Award, Star, Zap } from "lucide-react";
 import { Certificate } from "@/types";
 import { supabase } from "@/lib/supabase";
 
@@ -109,6 +109,23 @@ export default function Certificates() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          {certificates.length === 0 && (
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col items-center justify-center py-20 md:py-32 text-center md:col-span-2"
+            >
+              <div className="p-5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 mb-6">
+                <Award size={36} className="text-emerald-600" />
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold mb-3 text-zinc-900 dark:text-zinc-100">
+                No Certificates Yet
+              </h3>
+              <p className="text-zinc-500 dark:text-zinc-400 max-w-md text-base font-light">
+                Certifications and recognitions will be displayed here soon.
+              </p>
+            </motion.div>
+          )}
+
           <AnimatePresence mode="popLayout">
             {certificates.map((cert) => (
               <motion.div
@@ -219,12 +236,6 @@ export default function Certificates() {
             ))}
           </AnimatePresence>
         </div>
-
-        {certificates.length === 0 && (
-          <div className="py-20 text-center text-zinc-400 font-mono text-xs uppercase tracking-[0.3em]">
-            Database Empty // No Records Found
-          </div>
-        )}
       </motion.main>
     </motion.div>
   );

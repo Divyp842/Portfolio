@@ -8,6 +8,7 @@ import {
   Search,
   Command,
   Sparkles,
+  Zap,
 } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Project } from "@/types";
@@ -40,7 +41,9 @@ function ProjectImage({ src, alt }: { src: string; alt: string }) {
   return (
     <>
       {!loaded && !error && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-zinc-200 via-zinc-100 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800" />
+        <div className="absolute inset-0 flex items-center justify-center bg-zinc-200 dark:bg-zinc-800 animate-pulse">
+          <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
+        </div>
       )}
       {error ? (
         <div className="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800">
@@ -160,6 +163,40 @@ export default function Projects() {
           variants={containerVariants}
           className="grid grid-cols-1 gap-6 md:gap-10"
         >
+          {projects.length === 0 && (
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col items-center justify-center py-20 md:py-32 text-center"
+            >
+              <div className="p-5 rounded-full bg-purple-50 dark:bg-purple-950/30 mb-6">
+                <Zap size={36} className="text-purple-600" />
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold mb-3 text-zinc-900 dark:text-zinc-100">
+                No Projects Yet
+              </h3>
+              <p className="text-zinc-500 dark:text-zinc-400 max-w-md text-base font-light">
+                Projects will be displayed here soon. Check back later!
+              </p>
+            </motion.div>
+          )}
+
+          {projects.length > 0 && filteredProjects.length === 0 && (
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col items-center justify-center py-20 md:py-32 text-center"
+            >
+              <div className="p-5 rounded-full bg-purple-50 dark:bg-purple-950/30 mb-6">
+                <Search size={36} className="text-purple-600" />
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold mb-3 text-zinc-900 dark:text-zinc-100">
+                No Results Found
+              </h3>
+              <p className="text-zinc-500 dark:text-zinc-400 max-w-md text-base font-light">
+                Try adjusting your search terms to find what you're looking for.
+              </p>
+            </motion.div>
+          )}
+
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project) => (
               <motion.div
@@ -217,7 +254,7 @@ export default function Projects() {
                       </div>
                     </div>
 
-                    <p className="text-zinc-500 dark:text-zinc-400 text-xs md:text-base leading-relaxed font-normal line-clamp-2 md:line-clamp-3">
+                    <p className="text-zinc-500 dark:text-zinc-400 text-xs md:text-base leading-relaxed font-normal">
                       {project.description}
                     </p>
 
