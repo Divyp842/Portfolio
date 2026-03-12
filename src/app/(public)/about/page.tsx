@@ -25,37 +25,48 @@ function TimelineCard({
   item,
   direction,
   color,
+  isMobile, // Pass isMobile to adjust movement
 }: {
   item: any;
   direction: "left" | "right";
   color: string;
+  isMobile: boolean;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: cardRef,
-    offset: ["start 90%", "start 60%"],
+    offset: ["start 95%", "start 65%"], // Adjusted offset for better mobile timing
   });
 
+  /**
+   * FIX: ANTI-JERK SPRING
+   * Increased stiffness and damping. This prevents the "bouncing" 
+   * effect that feels like lag/jerking on high-refresh-rate mobile screens.
+   */
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 60,
-    damping: 20,
+    stiffness: 90, // Increased from 60
+    damping: 25,   // Increased from 20
+    mass: 0.5,     // Lighter mass for snappier response
     restDelta: 0.001,
   });
 
-  const opacity = useTransform(smoothProgress, [0, 0.3], [0, 1]);
-  const scale = useTransform(smoothProgress, [0, 1], [0.92, 1]);
+  const opacity = useTransform(smoothProgress, [0, 0.4], [0, 1]);
+  const scale = useTransform(smoothProgress, [0, 1], [0.95, 1]);
+  
+  /**
+   * FIX: REDUCED X-TRAVEL
+   * On mobile, we reduce the slide-in distance from 60 to 25.
+   * Large X-movements on mobile cause the eye to lose track of the text, feeling "jerky".
+   */
+  const xDistance = isMobile ? 25 : 60;
   const x = useTransform(
     smoothProgress,
     [0, 1],
-    [direction === "left" ? -60 : 60, 0]
+    [direction === "left" ? -xDistance : xDistance, 0]
   );
   
-  /**
-   * FIX: REDUCED BLUR
-   * Changed from 12px to 2px. 
-   * This provides a subtle "focus" effect without the heavy blur that looks like lag on mobile.
-   */
+  // FIX: REDUCED BLUR (2px)
   const blurValue = useTransform(smoothProgress, [0, 0.8], [2, 0]);
   const filter = useTransform(blurValue, (v) => `blur(${v}px)`);
   
@@ -125,12 +136,14 @@ function TimelineColumn({
   items,
   color,
   direction,
+  isMobile,
 }: {
   title: string;
   icon: React.ReactNode;
   items: any[];
   color: string;
   direction: "left" | "right";
+  isMobile: boolean;
 }) {
   const columnRef = useRef(null);
   
@@ -167,7 +180,13 @@ function TimelineColumn({
         />
         <div className="space-y-0 pt-2">
           {items?.map((item, i) => (
-            <TimelineCard key={i} item={item} direction={direction} color={color} />
+            <TimelineCard 
+                key={i} 
+                item={item} 
+                direction={direction} 
+                color={color} 
+                isMobile={isMobile}
+            />
           ))}
         </div>
       </div>
@@ -180,8 +199,6 @@ export default function About() {
   const [about, setAbout] = useState<About | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  
-  // FIX: IMAGE LOADER STATE
   const [imgIsLoading, setImgIsLoading] = useState(true);
 
   const { scrollYProgress } = useScroll();
@@ -242,19 +259,15 @@ export default function About() {
       <motion.main className="relative z-10 max-w-6xl mx-auto px-6 pb-24">
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start mb-16 md:mb-32">
           
-          {/* Profile Section with FIX: Smooth Loader */}
           <div className="lg:col-span-5 space-y-6 order-1 lg:order-2 flex flex-col items-center">
             <div className="relative max-w-[280px] md:max-w-none w-full">
               <div className="aspect-square rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2 shadow-sm">
                 <div className="relative w-full h-full rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                  
-                  {/* SKELETON / LOADER */}
                   {imgIsLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-zinc-200 dark:bg-zinc-900 animate-pulse">
                       <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
                     </div>
                   )}
-
                   {about?.profile_photo && (
                     <motion.img
                       src={about.profile_photo}
@@ -315,6 +328,7 @@ export default function About() {
             items={Array.isArray(about?.education) ? about.education : []}
             color="blue"
             direction="left"
+            isMobile={isMobile}
           />
           <TimelineColumn
             title="Experience"
@@ -322,6 +336,7 @@ export default function About() {
             items={Array.isArray(about?.experience) ? about.experience : []}
             color="purple"
             direction="right"
+            isMobile={isMobile}
           />
         </div>
       </motion.main>
