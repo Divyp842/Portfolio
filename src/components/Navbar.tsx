@@ -62,7 +62,7 @@ export function Navbar() {
             </div>
             <div className="flex flex-col leading-none">
               <span className="text-base sm:text-lg font-black tracking-tighter uppercase">
-                Portfolio
+                DIVY PATEL
               </span>
             </div>
           </Link>
